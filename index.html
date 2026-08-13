@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RideRush — NYC FHV Intelligence Platform</title>
+  <meta name="description" content="Real-time NYC For-Hire Vehicle analytics, AI-powered trip forecasting and fleet intelligence — all in one premium platform." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Clash+Display:wght@400;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Lottie Player -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"></script>
+</head>
+<body>
+
+  <!-- =============================== NAVBAR =============================== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo" id="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#F59E0B"/><path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/></svg>
+        </div>
+        <span>RideRush</span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#deals">Reports</a></li>
+        <li><a href="#analytics">Analytics</a></li>
+        <li><a href="#predict">Predict</a></li>
+        <li><a href="#insights">Insights</a></li>
+      </ul>
+
+      <div class="nav-right">
+        <button class="nav-lang-btn" id="lang-btn">EN ↓</button>
+        <a href="#predict" class="btn-orange" id="nav-cta">Get Started</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#deals">Reports</a>
+      <a href="#analytics">Analytics</a>
+      <a href="#predict">Predict</a>
+      <a href="#insights">Insights</a>
+    </div>
+  </nav>
+
+  <!-- =============================== HERO =============================== -->
+  <section class="hero" id="hero">
+    <!-- Background Image -->
+    <div class="hero-bg">
+      <img
+        src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1800&q=85"
+        alt="NYC Skyline at night"
+        class="hero-bg-img"
+        id="hero-bg-img"
+      />
+      <div class="hero-bg-overlay"></div>
+    </div>
+
+    <!-- Left Content -->
+    <div class="hero-content">
+      <div class="hero-location-chip">
+        <span class="chip-dot"></span>
+        <span>New York City, USA</span>
+      </div>
+
+      <h1 class="hero-title" id="hero-title">Manhattan</h1>
+      <p class="hero-subtitle">NYC's #1 FHV Dispatch Network</p>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="meta-label">MONTHLY TRIPS</span>
+          <span class="meta-val orange">42,667+</span>
+        </div>
+        <button class="hero-info-btn" id="info-btn" aria-label="Info">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+        </button>
+        <a href="#predict" class="btn-orange" id="hero-book-btn">Predict Now →</a>
+      </div>
+
+      <div class="hero-selectors">
+        <div class="selector-item">
+          <span class="selector-label">DATE</span>
+          <select class="hero-select" id="hero-date">
+            <option>Jan 2026 ↓</option>
+            <option>Feb 2026</option>
+            <option>Mar 2026</option>
+            <option>Aug 2026</option>
+          </select>
+        </div>
+        <div class="selector-item">
+          <span class="selector-label">FLEET SIZE</span>
+          <select class="hero-select" id="hero-fleet">
+            <option>2×2 ↓</option>
+            <option>1×1</option>
+            <option>5+×5+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="hero-search-wrap">
+        <input type="text" class="hero-search" id="hero-search" placeholder='Try searching "SEAMAN RADIO DISPATCHERS"...' />
+        <button class="search-btn" id="search-btn" aria-label="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Mini Cards -->
+    <div class="hero-cards" id="hero-cards">
+      <div class="hero-mini-card" id="hmc-1"
+        style="background-image:url('https://images.unsplash.com/photo-1516733968668-dbdce39c4651?auto=format&fit=crop&w=400&q=80')">
+        <div class="hmc-overlay"></div>
+        <div class="hmc-tag">HIGH VOLUME</div>
+        <div class="hmc-name">Brooklyn</div>
+      </div>
+      <div class="hero-mini-card" id="hmc-2"
+        style="background-image:url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80')">
+        <div class="hmc-overlay"></div>
+        <div class="hmc-tag">TRENDING</div>
+        <div class="hmc-name">Queens</div>
+      </div>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" id="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>EXPLORE DATA</span>
+    </div>
+  </section>
+
+  <!-- =============================== DEALS / REPORTS =============================== -->
+  <section class="deals-section" id="deals">
+    <div class="deals-inner">
+      <div class="deals-header">
+        <h2 class="deals-title">Top FHV <span class="text-orange">Bases</span> by Volume</h2>
+        <a href="#predict" class="btn-outline-orange" id="view-all-btn">View All Reports →</a>
+      </div>
+
+      <div class="deals-track-wrap">
+        <div class="deals-track" id="deals-track">
+
+          <!-- Deal Card 1 -->
+          <div class="deal-card" id="dc-1">
+            <div class="deal-img-wrap">
+              <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80"
+                   alt="NYC Ride" class="deal-img" loading="lazy"/>
+              <div class="deal-timer" id="timer-1">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-val" data-seconds="86178">23:49:38</span>
+              </div>
+            </div>
+            <div class="deal-body">
+              <p class="deal-desc">Seaman Radio Dispatchers — NYC's highest volume FHV base, August peak season</p>
+              <div class="deal-footer">
+                <div class="deal-meta"><span class="deal-meta-label">PER MONTH, 1 BASE</span></div>
+                <span class="deal-price">42,667 <small>trips</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal Card 2 -->
+          <div class="deal-card" id="dc-2">
+            <div class="deal-img-wrap">
+              <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=500&q=80"
+                   alt="Luxury Fleet" class="deal-img" loading="lazy"/>
+              <div class="deal-timer" id="timer-2">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-val" data-seconds="177498">49:14:58</span>
+              </div>
+            </div>
+            <div class="deal-body">
+              <p class="deal-desc">Premium luxury car service with private fleet, Hill Country routes — 4 guests</p>
+              <div class="deal-footer">
+                <div class="deal-meta"><span class="deal-meta-label">4 GUESTS, 5 NIGHTS</span></div>
+                <span class="deal-price">6,670 <small>trips</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal Card 3 -->
+          <div class="deal-card" id="dc-3">
+            <div class="deal-img-wrap">
+              <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80"
+                   alt="Luxury Interior" class="deal-img" loading="lazy"/>
+              <div class="deal-timer" id="timer-3">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-val" data-seconds="3598">00:59:58</span>
+              </div>
+            </div>
+            <div class="deal-body">
+              <p class="deal-desc">Executive Cars — Royal Dispatch Services, mid-tier volume with premium fleet</p>
+              <div class="deal-footer">
+                <div class="deal-meta"><span class="deal-meta-label">PER MONTH, 4 NIGHTS</span></div>
+                <span class="deal-price">2,277 <small>trips</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal Card 4 -->
+          <div class="deal-card" id="dc-4">
+            <div class="deal-img-wrap">
+              <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=500&q=80"
+                   alt="NYC Aerial" class="deal-img" loading="lazy"/>
+              <div class="deal-timer" id="timer-4">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-val" data-seconds="16620">04:37:00</span>
+              </div>
+            </div>
+            <div class="deal-body">
+              <p class="deal-desc">New Bell Car Service — consistent performer in the NYC borough dispatch network</p>
+              <div class="deal-footer">
+                <div class="deal-meta"><span class="deal-meta-label">PER MONTH, 2 NIGHTS</span></div>
+                <span class="deal-price">11,572 <small>trips</small></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deal Card 5 -->
+          <div class="deal-card" id="dc-5">
+            <div class="deal-img-wrap">
+              <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=500&q=80"
+                   alt="Premium Car" class="deal-img" loading="lazy"/>
+              <div class="deal-timer" id="timer-5">
+                <span class="timer-icon">🕐</span>
+                <span class="timer-val" data-seconds="231840">64:24:00</span>
+              </div>
+            </div>
+            <div class="deal-body">
+              <p class="deal-desc">The Excellent C/S Inc — high-utilization base with broad vehicle deployment</p>
+              <div class="deal-footer">
+                <div class="deal-meta"><span class="deal-meta-label">PER MONTH, 7 NIGHTS</span></div>
+                <span class="deal-price">17,552 <small>trips</small></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- Scroll arrows -->
+        <button class="track-arrow track-arrow--left" id="track-prev" aria-label="Previous">‹</button>
+        <button class="track-arrow track-arrow--right" id="track-next" aria-label="Next">›</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== ANALYTICS (STATS) =============================== -->
+  <section class="analytics-section" id="analytics">
+    <div class="analytics-inner">
+
+      <!-- Left: Lottie + headline -->
+      <div class="analytics-left">
+        <span class="section-tag">Live Intelligence</span>
+        <h2 class="section-title">NYC FHV Data<br/><span class="text-orange">at a glance</span></h2>
+        <p class="analytics-desc">
+          Our platform processes 59,000+ monthly records from the NYC TLC For-Hire Vehicle Base Aggregate Report, surfacing real-time trends across 1,200+ licensed FHV bases.
+        </p>
+        <div class="analytics-lottie" id="analytics-lottie">
+          <lottie-player
+            id="lottie-analytics"
+            src="https://assets4.lottiefiles.com/packages/lf20_hm1mkcgk.json"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+            style="width:260px;height:260px;">
+          </lottie-player>
+        </div>
+      </div>
+
+      <!-- Right: Stat cards -->
+      <div class="analytics-right">
+        <div class="stat-grid">
+          <div class="stat-card" id="sc-1">
+            <div class="stat-card-icon">
+              <lottie-player
+                src="https://assets5.lottiefiles.com/packages/lf20_nk4jvsun.json"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay
+                style="width:52px;height:52px;">
+              </lottie-player>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-card-num" data-count="59273">0</span>
+              <span class="stat-card-label">Total Records</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sc-2">
+            <div class="stat-card-icon">
+              <lottie-player
+                src="https://assets3.lottiefiles.com/packages/lf20_jmejybvu.json"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay
+                style="width:52px;height:52px;">
+              </lottie-player>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-card-num" data-count="1247">0</span>
+              <span class="stat-card-label">FHV Bases Tracked</span>
+            </div>
+          </div>
+
+          <div class="stat-card stat-card--orange" id="sc-3">
+            <div class="stat-card-icon">
+              <lottie-player
+                src="https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay
+                style="width:52px;height:52px;">
+              </lottie-player>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-card-num" data-count="10">0</span>
+              <span class="stat-card-label">Years of Data</span>
+            </div>
+          </div>
+
+          <div class="stat-card" id="sc-4">
+            <div class="stat-card-icon">
+              <lottie-player
+                src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay
+                style="width:52px;height:52px;">
+              </lottie-player>
+            </div>
+            <div class="stat-card-body">
+              <span class="stat-card-num" data-count="94">0</span><span class="stat-card-pct">%</span>
+              <span class="stat-card-label">Model Accuracy (R²)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Chart -->
+        <div class="mini-timeline" id="mini-timeline">
+          <div class="mini-timeline-header">
+            <span class="mini-timeline-title">Trip Volume by Year</span>
+            <span class="mini-timeline-legend"><span class="legend-dot"></span>Avg. Monthly Trips</span>
+          </div>
+          <div class="chart-bars" id="chart-bars"></div>
+          <div class="chart-labels" id="chart-labels"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== NEWSLETTER =============================== -->
+  <section class="newsletter-section" id="newsletter">
+    <div class="newsletter-inner">
+      <div class="newsletter-lottie">
+        <lottie-player
+          src="https://assets5.lottiefiles.com/packages/lf20_jdqfpewq.json"
+          background="transparent"
+          speed="1"
+          loop
+          autoplay
+          style="width:80px;height:80px;">
+        </lottie-player>
+      </div>
+      <p class="newsletter-sub">SUBSCRIBE</p>
+      <h2 class="newsletter-title">GET EXCLUSIVE <span class="text-orange">20% OFF</span> ON PREDICTIONS AND REPORTS</h2>
+      <form class="newsletter-form" id="newsletter-form" novalidate>
+        <input type="email" class="newsletter-input" id="newsletter-email" placeholder="Your email address" />
+        <button type="submit" class="btn-orange newsletter-btn" id="newsletter-submit">SUBSCRIBE</button>
+      </form>
+      <p class="newsletter-note">
+        By subscribing to our mailing list you agree to accept our <a href="#">Privacy Policy</a>.
+        You can unsubscribe from the mailing list any time you like.
+      </p>
+    </div>
+    <div class="nl-decor nl-decor--left">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.04">
+        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="nl-decor nl-decor--right">
+      <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.04">
+        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- =============================== ML PREDICTION =============================== -->
+  <section class="predict-section" id="predict">
+    <div class="predict-inner">
+      <div class="predict-header">
+        <h2 class="section-title">AI Trip <span class="text-orange">Prediction</span></h2>
+        <p class="predict-subtitle">Enter base parameters and our GBM model predicts monthly dispatch volume.</p>
+      </div>
+
+      <div class="predict-layout">
+        <!-- Lottie left panel -->
+        <div class="predict-lottie-panel" id="predict-lottie-panel">
+          <div class="plp-badge">GBM Model · R² 0.94</div>
+          <lottie-player
+            id="lottie-predict"
+            src="https://assets3.lottiefiles.com/packages/lf20_fcfjwiyb.json"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+            style="width:300px;height:300px;">
+          </lottie-player>
+          <div class="plp-stats">
+            <div class="plp-stat">
+              <span class="plp-stat-val">±120</span>
+              <span class="plp-stat-label">Mean Abs. Error</span>
+            </div>
+            <div class="plp-stat">
+              <span class="plp-stat-val">5-Fold</span>
+              <span class="plp-stat-label">Cross Validation</span>
+            </div>
+            <div class="plp-stat">
+              <span class="plp-stat-val">GBM</span>
+              <span class="plp-stat-label">Algorithm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="predict-form-card" id="predict-form-card">
+          <div class="pfc-header">
+            <h3>Trip Volume Forecast</h3>
+            <span class="pfc-badge">LIVE MODEL</span>
+          </div>
+          <form class="predict-form" id="predict-form" novalidate>
+            <div class="pf-row">
+              <div class="pf-group" id="pfg-month">
+                <label for="pf-month">Month</label>
+                <select id="pf-month">
+                  <option value="">Select month</option>
+                  <option value="1">January</option><option value="2">February</option>
+                  <option value="3">March</option><option value="4">April</option>
+                  <option value="5">May</option><option value="6">June</option>
+                  <option value="7">July</option><option value="8">August</option>
+                  <option value="9">September</option><option value="10">October</option>
+                  <option value="11">November</option><option value="12">December</option>
+                </select>
+              </div>
+              <div class="pf-group" id="pfg-year">
+                <label for="pf-year">Year</label>
+                <select id="pf-year">
+                  <option value="">Select year</option>
+                  <option value="2024">2024</option><option value="2025">2025</option>
+                  <option value="2026">2026</option><option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                </select>
+              </div>
+            </div>
+            <div class="pf-group" id="pfg-vehicles">
+              <label for="pf-vehicles">Unique Dispatched Vehicles</label>
+              <input type="number" id="pf-vehicles" min="1" max="1000" placeholder="e.g. 45" />
+            </div>
+            <div class="pf-group" id="pfg-shared">
+              <label for="pf-shared">Shared Trips Last Month (0 if unknown)</label>
+              <input type="number" id="pf-shared" min="0" placeholder="e.g. 0" />
+            </div>
+            <div class="pf-group" id="pfg-base">
+              <label for="pf-base">Base Category</label>
+              <select id="pf-base">
+                <option value="">Select category</option>
+                <option value="small">Small · 1–5 vehicles</option>
+                <option value="medium">Medium · 6–30 vehicles</option>
+                <option value="large">Large · 31–100 vehicles</option>
+                <option value="enterprise">Enterprise · 100+ vehicles</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-orange btn-full" id="predict-btn">
+              <span class="btn-text">🔮 Predict Trips</span>
+              <span class="btn-spin" style="display:none;">
+                <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
+                  background="transparent" speed="2" loop autoplay style="width:24px;height:24px;"></lottie-player>
+              </span>
+            </button>
+          </form>
+
+          <!-- Result -->
+          <div class="pf-result" id="pf-result" style="display:none;">
+            <div class="pf-result-divider"></div>
+            <div class="pf-result-header">
+              <span>Predicted Monthly Trips</span>
+              <span class="pf-result-tag">GBM ✓</span>
+            </div>
+            <div class="pf-result-main">
+              <span class="pf-result-num" id="pf-result-num">—</span>
+              <span class="pf-result-unit">trips/month</span>
+            </div>
+            <div class="pf-result-range">
+              Range: <strong id="pf-low">—</strong> – <strong id="pf-high">—</strong> trips
+            </div>
+            <div class="pf-confidence">
+              <div class="pf-conf-bar-bg"><div class="pf-conf-bar" id="pf-conf-bar"></div></div>
+              <span id="pf-conf-label">Confidence</span>
+            </div>
+            <div class="pf-insights" id="pf-insights"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== INSIGHTS / VIDEOS =============================== -->
+  <section class="insights-section" id="insights">
+    <div class="insights-inner">
+      <div class="insights-header">
+        <div class="insights-title-row">
+          <h2 class="insights-title">VIDEOS <span class="title-dash">—</span> INSIGHTS</h2>
+          <a href="#" class="btn-orange-sm" id="more-insights-btn">MORE INSIGHTS →</a>
+        </div>
+      </div>
+
+      <div class="insights-grid">
+        <div class="insight-card insight-card--large" id="ic-1">
+          <img src="https://images.unsplash.com/photo-1548407260-da850faa41e3?auto=format&fit=crop&w=800&q=80"
+               alt="NYC FHV Analytics" class="insight-img" loading="lazy"/>
+          <div class="insight-overlay">
+            <button class="play-btn" id="play-1" aria-label="Play">
+              <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_jdqfpewq.json"
+                background="transparent" speed="1" loop autoplay style="width:60px;height:60px;"></lottie-player>
+            </button>
+            <div class="insight-meta">
+              <span class="insight-tag">ANALYTICS</span>
+              <h3>How NYC FHV Trip Volumes Surged Post-2021</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-card" id="ic-2">
+          <img src="https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=600&q=80"
+               alt="City Architecture" class="insight-img" loading="lazy"/>
+          <div class="insight-overlay">
+            <button class="play-btn" id="play-2" aria-label="Play">
+              <span class="play-icon">▶</span>
+            </button>
+            <div class="insight-meta">
+              <span class="insight-tag">FLEET</span>
+              <h3>Top 10 Bases by Dispatched Vehicles</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight-card" id="ic-3">
+          <img src="https://images.unsplash.com/photo-1524055988636-436cfa46e59e?auto=format&fit=crop&w=600&q=80"
+               alt="Data Science" class="insight-img" loading="lazy"/>
+          <div class="insight-overlay">
+            <button class="play-btn" id="play-3" aria-label="Play">
+              <span class="play-icon">▶</span>
+            </button>
+            <div class="insight-meta">
+              <span class="insight-tag">ML MODEL</span>
+              <h3>Building the GBM Prediction Engine on FHV Data</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== HOW IT WORKS =============================== -->
+  <section class="how-section" id="how">
+    <div class="how-inner">
+      <div class="how-header">
+        <span class="section-tag">Process</span>
+        <h2 class="section-title">From raw data to<br/><span class="text-orange">live predictions</span></h2>
+      </div>
+      <div class="how-steps">
+        <div class="how-step" id="hs-1">
+          <div class="hs-num">01</div>
+          <div class="hs-icon">
+            <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_nk4jvsun.json"
+              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+          </div>
+          <h3>Data Ingestion</h3>
+          <p>NYC TLC FHV Aggregate Reports are pulled, cleaned, and normalized across all 59k+ monthly records.</p>
+        </div>
+        <div class="hs-arrow">→</div>
+        <div class="how-step" id="hs-2">
+          <div class="hs-num">02</div>
+          <div class="hs-icon">
+            <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_hm1mkcgk.json"
+              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+          </div>
+          <h3>Feature Engineering</h3>
+          <p>Seasonal indices, vehicle ratios, lag features and base-size categories are computed for training.</p>
+        </div>
+        <div class="hs-arrow">→</div>
+        <div class="how-step" id="hs-3">
+          <div class="hs-num">03</div>
+          <div class="hs-icon">
+            <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
+              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+          </div>
+          <h3>Model Training</h3>
+          <p>Gradient Boosting Machine trained with 5-fold cross validation, optimized for minimal MAE.</p>
+        </div>
+        <div class="hs-arrow">→</div>
+        <div class="how-step" id="hs-4">
+          <div class="hs-num">04</div>
+          <div class="hs-icon">
+            <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
+              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+          </div>
+          <h3>Live Inference</h3>
+          <p>Enter your base parameters and receive predictions with confidence intervals in milliseconds.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================== FOOTER =============================== -->
+  <footer class="footer" id="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo footer-logo">
+            <div class="logo-icon">
+              <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#F59E0B"/><path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/></svg>
+            </div>
+            <span>RideRush</span>
+          </a>
+          <p>AI-powered NYC FHV intelligence platform. Predict, analyze, and optimize for-hire vehicle dispatch performance.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-btn" aria-label="Twitter">𝕏</a>
+            <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+            <a href="#" class="social-btn" aria-label="GitHub">⌥</a>
+          </div>
+        </div>
+        <div class="footer-links-wrap">
+          <div class="footer-col">
+            <h4>Platform</h4>
+            <a href="#predict">Prediction Model</a>
+            <a href="#analytics">Analytics</a>
+            <a href="#deals">Reports</a>
+            <a href="#insights">Insights</a>
+          </div>
+          <div class="footer-col">
+            <h4>Data</h4>
+            <a href="#">NYC TLC Dataset</a>
+            <a href="#">FHV Reports</a>
+            <a href="#">API Docs</a>
+            <a href="#">Documentation</a>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="#">Blog</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 RideRush. Built with NYC TLC open data.</span>
+        <span>Data: NYC Open Data · TLC FHV Base Reports</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
