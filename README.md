@@ -1,6 +1,6 @@
 # RideRush — NYC FHV Intelligence Platform
 
-A premium frontend for AI-powered NYC For-Hire Vehicle (FHV) analytics and trip prediction.
+A premium frontend for NYC For-Hire Vehicle (FHV) analytics and trip prediction.
 
 ## 🚀 Features
 - **Hero Section** — Full-bleed NYC skyline with animated borough title cycler
