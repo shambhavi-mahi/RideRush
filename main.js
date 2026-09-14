@@ -549,31 +549,9 @@
 
 
   /* =====================================================
-     11. ML PREDICTION ENGINE
+     11. ML PREDICTION ENGINE (Now hitting Flask backend)
      ===================================================== */
-  const SEASONAL   = { 1:.88,2:.84,3:.92,4:.96,5:1.02,6:1.05,7:1.08,8:1.10,9:1.07,10:1.04,11:.95,12:.91 };
-  const BASE_WEIGHT = { small:22, medium:28, large:36, enterprise:48 };
 
-  function predictTrips(month, year, vehicles, shared, baseType) {
-    const seasonal   = SEASONAL[+month]      || 1.0;
-    const bw         = BASE_WEIGHT[baseType] || 28;
-    const v = +vehicles, s = +shared || 0;
-    let core = v * bw;
-    const sharedBonus = s > 0 ? Math.log1p(s) * 12 : 0;
-    let yrFactor = +year >= 2025 ? 1.12 : +year >= 2023 ? 1.05 : 1.0;
-    let pred = core * seasonal * yrFactor + sharedBonus;
-    if (v > 100) pred = pred * 0.88 + v * 15;
-    if (v > 300) pred = pred * 0.80 + v * 20;
-    pred = Math.max(10, Math.round(pred));
-    const confidence = Math.min(97, 60 + Math.log10(v + 1) * 18);
-    const errPct = baseType === 'enterprise' ? 0.15 : baseType === 'large' ? 0.18 : 0.22;
-    return {
-      predicted: pred,
-      low:  Math.round(pred * (1 - errPct)),
-      high: Math.round(pred * (1 + errPct)),
-      confidence: Math.round(confidence),
-    };
-  }
 
   function buildInsights(vehicles, month, baseType, predicted) {
     const items = [];
@@ -598,14 +576,14 @@
   const predictBtn   = document.getElementById('predict-btn');
 
   if (predictForm) {
-    predictForm.addEventListener('submit', (e) => {
+    predictForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       predictForm.querySelectorAll('.pf-group.error').forEach(g => g.classList.remove('error'));
 
       const month    = document.getElementById('pf-month')?.value;
       const year     = document.getElementById('pf-year')?.value;
       const vehicles = document.getElementById('pf-vehicles')?.value;
-      const shared   = document.getElementById('pf-shared')?.value;
+      const shared   = document.getElementById('pf-shared')?.value || 0;
       const baseType = document.getElementById('pf-base')?.value;
 
       let valid = true;
@@ -620,44 +598,59 @@
       predictBtn.disabled = true;
       if (pfResult) pfResult.style.display = 'none';
 
-      setTimeout(() => {
-        const r = predictTrips(month, year, vehicles, shared, baseType);
-        const insights = buildInsights(vehicles, month, baseType, r.predicted);
+      try {
+        const response = await fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ month, year, vehicles, shared, baseType })
+        });
+        
+        const r = await response.json();
+        
+        if (response.ok) {
+          const insights = buildInsights(vehicles, month, baseType, r.predicted);
 
-        if (pfResultNum) {
-          pfResultNum.textContent = '0';
-          // Animate the result number with GSAP
-          if (typeof gsap !== 'undefined') {
-            gsap.fromTo({ val: 0 }, { val: r.predicted,
-              duration: 1.4, ease: 'power3.out',
-              onUpdate: function () { pfResultNum.textContent = Math.round(this.targets()[0].val).toLocaleString(); }
-            });
-            // Bounce-in the result card
-            if (pfResult) {
-              pfResult.style.display = 'block';
-              gsap.fromTo(pfResult, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+          if (pfResultNum) {
+            pfResultNum.textContent = '0';
+            // Animate the result number with GSAP
+            if (typeof gsap !== 'undefined') {
+              gsap.fromTo({ val: 0 }, { val: r.predicted,
+                duration: 1.4, ease: 'power3.out',
+                onUpdate: function () { pfResultNum.textContent = Math.round(this.targets()[0].val).toLocaleString(); }
+              });
+              // Bounce-in the result card
+              if (pfResult) {
+                pfResult.style.display = 'block';
+                gsap.fromTo(pfResult, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+              }
+            } else {
+              pfResultNum.textContent = r.predicted.toLocaleString();
+              if (pfResult) pfResult.style.display = 'block';
             }
-          } else {
-            pfResultNum.textContent = r.predicted.toLocaleString();
-            if (pfResult) pfResult.style.display = 'block';
           }
-        }
 
-        if (pfLow)        pfLow.textContent  = r.low.toLocaleString();
-        if (pfHigh)       pfHigh.textContent = r.high.toLocaleString();
-        if (pfConfBar) {
-          pfConfBar.style.width = '0%';
-          setTimeout(() => { pfConfBar.style.width = r.confidence + '%'; }, 60);
+          if (pfLow)        pfLow.textContent  = r.low.toLocaleString();
+          if (pfHigh)       pfHigh.textContent = r.high.toLocaleString();
+          if (pfConfBar) {
+            pfConfBar.style.width = '0%';
+            setTimeout(() => { pfConfBar.style.width = r.confidence + '%'; }, 60);
+          }
+          if (pfConfLabel)  pfConfLabel.textContent = `${r.confidence}% Confidence`;
+          if (pfInsights)   pfInsights.innerHTML = insights.map(i => `<div class="pf-insight-item">${i}</div>`).join('');
+          
+          if (window.innerWidth < 900 && pfResult) pfResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          console.error("Backend error:", r.error);
+          alert("Error from prediction server: " + (r.error || "Unknown"));
         }
-        if (pfConfLabel)  pfConfLabel.textContent = `${r.confidence}% Confidence`;
-        if (pfInsights)   pfInsights.innerHTML = insights.map(i => `<div class="pf-insight-item">${i}</div>`).join('');
-
+      } catch (err) {
+        console.error("Fetch failed:", err);
+        alert("Failed to connect to the prediction backend. Is app.py running?");
+      } finally {
         predictBtn.querySelector('.btn-text').style.display = 'inline';
         predictBtn.querySelector('.btn-spin').style.display = 'none';
         predictBtn.disabled = false;
-
-        if (window.innerWidth < 900 && pfResult) pfResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 950);
+      }
     });
 
     predictForm.querySelectorAll('input, select').forEach(el => {
