@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% set active = 'trees' %}
+{% block title %}Trees & Boosting — RideRush ML{% endblock %}
+{% block page_title %}Trees & <span>Boosting</span>{% endblock %}
+{% block page_subtitle %}Non-linear models for FHV Data{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="card">
+  <div class="card-title">Decision Tree Regressor (Depth = 3)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ tree.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ tree.features | join(' · ') }}</strong>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ tree.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(tree.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(tree.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(tree.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;">
+    {% if plots.tree_plot is defined %}
+    <div class="card-title" style="margin-bottom:12px;">Tree Visualization</div>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.tree_plot }}" alt="Decision Tree Plot" style="background-color: rgba(255, 255, 255, 0.9); padding: 10px;">
+    {% endif %}
+  </div>
+
+  <div class="plots-grid" style="margin-top:24px;">
+    {% if plots.scatter is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">Model Performance</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.scatter }}" alt="Actual vs Predicted">
+    </div>
+    {% endif %}
+
+    {% if plots.importances is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">Feature Importances</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.importances }}" alt="Feature Importances">
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ── RANDOM FOREST REGRESSOR ── -->
+{% if rf is defined %}
+<div class="card" style="margin-top:24px;">
+  <div class="card-title">Random Forest Regressor (50 Trees, Max Depth = 5)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ rf.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ rf.features | join(' · ') }}</strong>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ rf.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(rf.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(rf.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(rf.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+  </div>
+
+  <div class="plots-grid" style="margin-top:24px;">
+    {% if plots.rf_scatter is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">RF Model Performance</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.rf_scatter }}" alt="RF Actual vs Predicted">
+    </div>
+    {% endif %}
+
+    {% if plots.rf_importances is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">RF Feature Importances</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.rf_importances }}" alt="RF Feature Importances">
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endif %}
+
+<!-- ── GRADIENT BOOSTING REGRESSOR ── -->
+{% if gb is defined %}
+<div class="card" style="margin-top:24px;">
+  <div class="card-title">Gradient Boosting Regressor (50 Estimators, Max Depth = 3)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ gb.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ gb.features | join(' · ') }}</strong>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ gb.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(gb.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(gb.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(gb.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+  </div>
+
+  <div class="plots-grid" style="margin-top:24px;">
+    {% if plots.gb_scatter is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">GB Model Performance</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.gb_scatter }}" alt="GB Actual vs Predicted">
+    </div>
+    {% endif %}
+
+    {% if plots.gb_importances is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">GB Feature Importances</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.gb_importances }}" alt="GB Feature Importances">
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endif %}
+
+<!-- ── ADABOOST REGRESSOR ── -->
+{% if ab is defined %}
+<div class="card" style="margin-top:24px;">
+  <div class="card-title">AdaBoost Regressor (50 Estimators)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ ab.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ ab.features | join(' · ') }}</strong>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ ab.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ab.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ab.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ab.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+  </div>
+
+  <div class="plots-grid" style="margin-top:24px;">
+    {% if plots.ab_scatter is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">AdaBoost Model Performance</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.ab_scatter }}" alt="AdaBoost Actual vs Predicted">
+    </div>
+    {% endif %}
+
+    {% if plots.ab_importances is defined %}
+    <div class="plot-card">
+      <h3 class="plot-card-title">AdaBoost Feature Importances</h3>
+      <img class="plot-img" src="data:image/png;base64,{{ plots.ab_importances }}" alt="AdaBoost Feature Importances">
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

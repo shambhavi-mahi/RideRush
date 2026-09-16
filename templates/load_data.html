@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% set active = 'load' %}
+{% block title %}Load Data — RideRush ML{% endblock %}
+{% block page_title %}Load <span>Data</span>{% endblock %}
+{% block page_subtitle %}FHV Base Aggregate Report · NYC Open Data · {{ total_rows }} records{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip">
+    <div class="label">Total Rows</div>
+    <div class="value">{{ '{:,}'.format(total_rows) }}</div>
+    <div class="sub">records loaded</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Columns</div>
+    <div class="value">{{ columns|length }}</div>
+    <div class="sub">features</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Previewing</div>
+    <div class="value">{{ rows|length }}</div>
+    <div class="sub">rows shown</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Dataset</div>
+    <div class="value" style="font-size:13px;padding-top:6px;">FHV NYC</div>
+    <div class="sub">Open Data</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Column Information</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Column Name</th><th>Data Type</th>
+          <th>Missing Count</th><th>Missing %</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for col in columns %}
+      <tr>
+        <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+        <td><strong>{{ col }}</strong></td>
+        <td><span class="badge badge-blue">{{ dtypes[col] }}</span></td>
+        <td class="td-num {% if missing[col] > 0 %}td-red{% else %}td-green{% endif %}">{{ missing[col] }}</td>
+        <td class="td-num">{{ miss_pct[col] }}%</td>
+        <td>
+          {% if missing[col] == 0 %}
+            <span class="badge badge-green">Complete</span>
+          {% elif miss_pct[col] < 10 %}
+            <span class="badge badge-orange">Low Missing</span>
+          {% elif miss_pct[col] < 30 %}
+            <span class="badge badge-orange">Moderate</span>
+          {% else %}
+            <span class="badge badge-red">High Missing</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Data Preview — First {{ rows|length }} Rows</div>
+  <div class="table-wrap" style="max-height:600px; overflow-y:auto;">
+    <table>
+      <thead>
+        <tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+      {% for row in rows %}
+      <tr>{% for cell in row %}<td class="td-num">{{ cell }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

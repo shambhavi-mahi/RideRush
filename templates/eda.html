@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% set active = 'eda' %}
+{% block title %}EDA — RideRush ML{% endblock %}
+{% block page_title %}EDA / <span>Statistics</span>{% endblock %}
+{% block page_subtitle %}Descriptive Statistics · Missing Value Analysis · Random Sample{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip">
+    <div class="label">Total Rows</div>
+    <div class="value">{{ '{:,}'.format(total_rows) }}</div>
+    <div class="sub">records</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Total Columns</div>
+    <div class="value">{{ total_cols }}</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Numeric Cols</div>
+    <div class="value">{{ stats|length }}</div>
+    <div class="sub">analysed</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Random Sample</div>
+    <div class="value">{{ sample_rows|length }}</div>
+    <div class="sub">rows</div>
+  </div>
+</div>
+
+<!-- Descriptive Stats -->
+<div class="card">
+  <div class="card-title">Descriptive Statistics</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Column</th>
+          <th>Count</th>
+          <th>Mean</th>
+          <th>Std Dev</th>
+          <th>Min</th>
+          <th>Q1 (25%)</th>
+          <th>Q2 (50%) Median</th>
+          <th>Q3 (75%)</th>
+          <th>Max</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for s in stats %}
+      <tr>
+        <td><strong style="color:#0f172a;">{{ s.column }}</strong></td>
+        <td class="td-num">{{ '{:,}'.format(s.count) }}</td>
+        <td class="td-num td-orange">{{ s.mean }}</td>
+        <td class="td-num">{{ s.std }}</td>
+        <td class="td-num td-blue">{{ s.min }}</td>
+        <td class="td-num">{{ s.q1 }}</td>
+        <td class="td-num td-green">{{ s.q2 }}</td>
+        <td class="td-num">{{ s.q3 }}</td>
+        <td class="td-num td-orange">{{ s.max }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px; font-size:12px; color:#475569;">
+    <span style="color:#F59E0B;">■</span> Mean/Max &nbsp;
+    <span style="color:#10B981;">■</span> Median (Q2) &nbsp;
+    <span style="color:#3B82F6;">■</span> Min
+  </div>
+</div>
+
+<!-- Missing Values -->
+<div class="card">
+  <div class="card-title">Missing Values Analysis</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Column</th><th>Data Type</th>
+          <th>Missing Count</th><th>Missing %</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for m in missing %}
+      <tr>
+        <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+        <td><strong>{{ m.column }}</strong></td>
+        <td><span class="badge badge-blue">{{ m.dtype }}</span></td>
+        <td class="td-num {% if m.missing > 0 %}td-red{% else %}td-green{% endif %}">
+          {{ m.missing }}
+        </td>
+        <td class="td-num">{{ m.pct }}%</td>
+        <td>
+          {% if m.missing == 0 %}
+            <span class="badge badge-green">No Missing</span>
+          {% elif m.pct < 5 %}
+            <span class="badge badge-orange">Low (&lt;5%)</span>
+          {% elif m.pct < 30 %}
+            <span class="badge badge-orange">Moderate</span>
+          {% else %}
+            <span class="badge badge-red">High (&gt;30%)</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Random Sample -->
+<div class="card">
+  <div class="card-title">Random Sample — 10 Rows (random_state=99)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>{% for col in sample_cols %}<th>{{ col }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+      {% for row in sample_rows %}
+      <tr>{% for cell in row %}<td class="td-num">{{ cell }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

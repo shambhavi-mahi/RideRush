@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RideRush — NYC FHV Intelligence Platform</title>
-  <meta name="description" content="Real-time NYC For-Hire Vehicle analytics, AI-powered trip forecasting and fleet intelligence — all in one premium platform." />
+  <meta name="description"
+    content="Real-time NYC For-Hire Vehicle analytics, AI-powered trip forecasting and fleet intelligence — all in one premium platform." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Clash+Display:wght@400;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Clash+Display:wght@400;600;700&family=Sora:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=3" />
   <!-- Three.js -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <!-- GSAP + ScrollTrigger -->
@@ -17,6 +21,7 @@
   <!-- Lottie Player -->
   <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js"></script>
 </head>
+
 <body>
 
   <!-- =============================== NAVBAR =============================== -->
@@ -24,7 +29,10 @@
     <div class="nav-inner">
       <a href="#" class="nav-logo" id="logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#F59E0B"/><path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/></svg>
+          <svg viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="#F59E0B" />
+            <path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white" />
+          </svg>
         </div>
         <span>RideRush</span>
       </a>
@@ -34,11 +42,12 @@
         <li><a href="#analytics">Analytics</a></li>
         <li><a href="#predict">Predict</a></li>
         <li><a href="#insights">Insights</a></li>
+        <li><a href="/load-data" style="color:#F59E0B;font-weight:600;">📊 Dashboard</a></li>
       </ul>
 
       <div class="nav-right">
         <button class="nav-lang-btn" id="lang-btn">EN ↓</button>
-        <a href="#predict" class="btn-orange" id="nav-cta">Get Started</a>
+        <a href="/load-data" class="btn-orange" id="nav-cta">Dashboard →</a>
         <button class="hamburger" id="hamburger" aria-label="Menu">
           <span></span><span></span><span></span>
         </button>
@@ -56,12 +65,8 @@
   <section class="hero" id="hero">
     <!-- Background Image -->
     <div class="hero-bg">
-      <img
-        src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1800&q=85"
-        alt="NYC Skyline at night"
-        class="hero-bg-img"
-        id="hero-bg-img"
-      />
+      <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1800&q=85"
+        alt="NYC Skyline at night" class="hero-bg-img" id="hero-bg-img" />
       <div class="hero-bg-overlay"></div>
     </div>
 
@@ -75,7 +80,7 @@
         <span>New York City, USA</span>
       </div>
 
-      <h1 class="hero-title" id="hero-title">Manhattan</h1>
+      <h1 class="hero-title" id="hero-title">RideRush</h1>
       <p class="hero-subtitle">NYC's #1 FHV Dispatch Network</p>
 
       <div class="hero-meta">
@@ -84,7 +89,11 @@
           <span class="meta-val orange">42,667+</span>
         </div>
         <button class="hero-info-btn" id="info-btn" aria-label="Info">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+            <path fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd" />
+          </svg>
         </button>
         <a href="#predict" class="btn-orange" id="hero-book-btn">Predict Now →</a>
       </div>
@@ -111,9 +120,13 @@
 
       <!-- Search Bar -->
       <div class="hero-search-wrap">
-        <input type="text" class="hero-search" id="hero-search" placeholder='Try searching "SEAMAN RADIO DISPATCHERS"...' />
+        <input type="text" class="hero-search" id="hero-search"
+          placeholder='Try searching "SEAMAN RADIO DISPATCHERS"...' />
         <button class="search-btn" id="search-btn" aria-label="Search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
         </button>
       </div>
     </div>
@@ -156,7 +169,7 @@
           <div class="deal-card" id="dc-1">
             <div class="deal-img-wrap">
               <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=500&q=80"
-                   alt="NYC Ride" class="deal-img" loading="lazy"/>
+                alt="NYC Ride" class="deal-img" loading="lazy" />
               <div class="deal-timer" id="timer-1">
                 <span class="timer-icon">🕐</span>
                 <span class="timer-val" data-seconds="86178">23:49:38</span>
@@ -175,7 +188,7 @@
           <div class="deal-card" id="dc-2">
             <div class="deal-img-wrap">
               <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=500&q=80"
-                   alt="Luxury Fleet" class="deal-img" loading="lazy"/>
+                alt="Luxury Fleet" class="deal-img" loading="lazy" />
               <div class="deal-timer" id="timer-2">
                 <span class="timer-icon">🕐</span>
                 <span class="timer-val" data-seconds="177498">49:14:58</span>
@@ -194,7 +207,7 @@
           <div class="deal-card" id="dc-3">
             <div class="deal-img-wrap">
               <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=500&q=80"
-                   alt="Luxury Interior" class="deal-img" loading="lazy"/>
+                alt="Luxury Interior" class="deal-img" loading="lazy" />
               <div class="deal-timer" id="timer-3">
                 <span class="timer-icon">🕐</span>
                 <span class="timer-val" data-seconds="3598">00:59:58</span>
@@ -213,7 +226,7 @@
           <div class="deal-card" id="dc-4">
             <div class="deal-img-wrap">
               <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=500&q=80"
-                   alt="NYC Aerial" class="deal-img" loading="lazy"/>
+                alt="NYC Aerial" class="deal-img" loading="lazy" />
               <div class="deal-timer" id="timer-4">
                 <span class="timer-icon">🕐</span>
                 <span class="timer-val" data-seconds="16620">04:37:00</span>
@@ -232,7 +245,7 @@
           <div class="deal-card" id="dc-5">
             <div class="deal-img-wrap">
               <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=500&q=80"
-                   alt="Premium Car" class="deal-img" loading="lazy"/>
+                alt="Premium Car" class="deal-img" loading="lazy" />
               <div class="deal-timer" id="timer-5">
                 <span class="timer-icon">🕐</span>
                 <span class="timer-val" data-seconds="231840">64:24:00</span>
@@ -262,20 +275,13 @@
       <!-- Left: Lottie + headline -->
       <div class="analytics-left">
         <span class="section-tag">Live Intelligence</span>
-        <h2 class="section-title">NYC FHV Data<br/><span class="text-orange">at a glance</span></h2>
+        <h2 class="section-title">NYC FHV Data<br /><span class="text-orange">at a glance</span></h2>
         <p class="analytics-desc">
-          Our platform processes 59,000+ monthly records from the NYC TLC For-Hire Vehicle Base Aggregate Report, surfacing real-time trends across 1,200+ licensed FHV bases.
+          Our platform processes 59,000+ monthly records from the NYC TLC For-Hire Vehicle Base Aggregate Report,
+          surfacing real-time trends across 1,200+ licensed FHV bases.
         </p>
         <div class="analytics-lottie" id="analytics-lottie">
-          <lottie-player
-            id="lottie-analytics"
-            src="https://assets4.lottiefiles.com/packages/lf20_hm1mkcgk.json"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-            style="width:260px;height:260px;">
-          </lottie-player>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         </div>
       </div>
 
@@ -284,14 +290,7 @@
         <div class="stat-grid">
           <div class="stat-card" id="sc-1">
             <div class="stat-card-icon">
-              <lottie-player
-                src="https://assets5.lottiefiles.com/packages/lf20_nk4jvsun.json"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-                style="width:52px;height:52px;">
-              </lottie-player>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
             </div>
             <div class="stat-card-body">
               <span class="stat-card-num" data-count="59273">0</span>
@@ -301,14 +300,7 @@
 
           <div class="stat-card" id="sc-2">
             <div class="stat-card-icon">
-              <lottie-player
-                src="https://assets3.lottiefiles.com/packages/lf20_jmejybvu.json"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-                style="width:52px;height:52px;">
-              </lottie-player>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
             </div>
             <div class="stat-card-body">
               <span class="stat-card-num" data-count="1247">0</span>
@@ -318,14 +310,7 @@
 
           <div class="stat-card stat-card--orange" id="sc-3">
             <div class="stat-card-icon">
-              <lottie-player
-                src="https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-                style="width:52px;height:52px;">
-              </lottie-player>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </div>
             <div class="stat-card-body">
               <span class="stat-card-num" data-count="10">0</span>
@@ -335,14 +320,7 @@
 
           <div class="stat-card" id="sc-4">
             <div class="stat-card-icon">
-              <lottie-player
-                src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-                style="width:52px;height:52px;">
-              </lottie-player>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
             </div>
             <div class="stat-card-body">
               <span class="stat-card-num" data-count="94">0</span><span class="stat-card-pct">%</span>
@@ -368,17 +346,11 @@
   <section class="newsletter-section" id="newsletter">
     <div class="newsletter-inner">
       <div class="newsletter-lottie">
-        <lottie-player
-          src="https://assets5.lottiefiles.com/packages/lf20_jdqfpewq.json"
-          background="transparent"
-          speed="1"
-          loop
-          autoplay
-          style="width:80px;height:80px;">
-        </lottie-player>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
       </div>
       <p class="newsletter-sub">SUBSCRIBE</p>
-      <h2 class="newsletter-title">GET EXCLUSIVE <span class="text-orange">20% OFF</span> ON PREDICTIONS AND REPORTS</h2>
+      <h2 class="newsletter-title">GET EXCLUSIVE <span class="text-orange">20% OFF</span> ON PREDICTIONS AND REPORTS
+      </h2>
       <form class="newsletter-form" id="newsletter-form" novalidate>
         <input type="email" class="newsletter-input" id="newsletter-email" placeholder="Your email address" />
         <button type="submit" class="btn-orange newsletter-btn" id="newsletter-submit">SUBSCRIBE</button>
@@ -390,16 +362,16 @@
     </div>
     <div class="nl-decor nl-decor--left">
       <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.04">
-        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2"/>
-        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2"/>
-        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2" />
+        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2" />
+        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2" />
       </svg>
     </div>
     <div class="nl-decor nl-decor--right">
       <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" opacity="0.04">
-        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2"/>
-        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2"/>
-        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2"/>
+        <circle cx="100" cy="100" r="90" stroke="white" stroke-width="2" />
+        <circle cx="100" cy="100" r="60" stroke="white" stroke-width="2" />
+        <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2" />
       </svg>
     </div>
   </section>
@@ -416,15 +388,7 @@
         <!-- Lottie left panel -->
         <div class="predict-lottie-panel" id="predict-lottie-panel">
           <div class="plp-badge">GBM Model · R² 0.94</div>
-          <lottie-player
-            id="lottie-predict"
-            src="https://assets3.lottiefiles.com/packages/lf20_fcfjwiyb.json"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-            style="width:300px;height:300px;">
-          </lottie-player>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
           <div class="plp-stats">
             <div class="plp-stat">
               <span class="plp-stat-val">±120</span>
@@ -453,20 +417,28 @@
                 <label for="pf-month">Month</label>
                 <select id="pf-month">
                   <option value="">Select month</option>
-                  <option value="1">January</option><option value="2">February</option>
-                  <option value="3">March</option><option value="4">April</option>
-                  <option value="5">May</option><option value="6">June</option>
-                  <option value="7">July</option><option value="8">August</option>
-                  <option value="9">September</option><option value="10">October</option>
-                  <option value="11">November</option><option value="12">December</option>
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
                 </select>
               </div>
               <div class="pf-group" id="pfg-year">
                 <label for="pf-year">Year</label>
                 <select id="pf-year">
                   <option value="">Select year</option>
-                  <option value="2024">2024</option><option value="2025">2025</option>
-                  <option value="2026">2026</option><option value="2027">2027</option>
+                  <option value="2024">2024</option>
+                  <option value="2025">2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
                   <option value="2028">2028</option>
                 </select>
               </div>
@@ -492,8 +464,7 @@
             <button type="submit" class="btn-orange btn-full" id="predict-btn">
               <span class="btn-text">🔮 Predict Trips</span>
               <span class="btn-spin" style="display:none;">
-                <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
-                  background="transparent" speed="2" loop autoplay style="width:24px;height:24px;"></lottie-player>
+                <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
               </span>
             </button>
           </form>
@@ -513,7 +484,9 @@
               Range: <strong id="pf-low">—</strong> – <strong id="pf-high">—</strong> trips
             </div>
             <div class="pf-confidence">
-              <div class="pf-conf-bar-bg"><div class="pf-conf-bar" id="pf-conf-bar"></div></div>
+              <div class="pf-conf-bar-bg">
+                <div class="pf-conf-bar" id="pf-conf-bar"></div>
+              </div>
               <span id="pf-conf-label">Confidence</span>
             </div>
             <div class="pf-insights" id="pf-insights"></div>
@@ -536,11 +509,10 @@
       <div class="insights-grid">
         <div class="insight-card insight-card--large" id="ic-1">
           <img src="https://images.unsplash.com/photo-1548407260-da850faa41e3?auto=format&fit=crop&w=800&q=80"
-               alt="NYC FHV Analytics" class="insight-img" loading="lazy"/>
+            alt="NYC FHV Analytics" class="insight-img" loading="lazy" />
           <div class="insight-overlay">
             <button class="play-btn" id="play-1" aria-label="Play">
-              <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_jdqfpewq.json"
-                background="transparent" speed="1" loop autoplay style="width:60px;height:60px;"></lottie-player>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             </button>
             <div class="insight-meta">
               <span class="insight-tag">ANALYTICS</span>
@@ -551,7 +523,7 @@
 
         <div class="insight-card" id="ic-2">
           <img src="https://images.unsplash.com/photo-1617469767053-d3b523a0b982?auto=format&fit=crop&w=600&q=80"
-               alt="City Architecture" class="insight-img" loading="lazy"/>
+            alt="City Architecture" class="insight-img" loading="lazy" />
           <div class="insight-overlay">
             <button class="play-btn" id="play-2" aria-label="Play">
               <span class="play-icon">▶</span>
@@ -565,7 +537,7 @@
 
         <div class="insight-card" id="ic-3">
           <img src="https://images.unsplash.com/photo-1524055988636-436cfa46e59e?auto=format&fit=crop&w=600&q=80"
-               alt="Data Science" class="insight-img" loading="lazy"/>
+            alt="Data Science" class="insight-img" loading="lazy" />
           <div class="insight-overlay">
             <button class="play-btn" id="play-3" aria-label="Play">
               <span class="play-icon">▶</span>
@@ -585,14 +557,13 @@
     <div class="how-inner">
       <div class="how-header">
         <span class="section-tag">Process</span>
-        <h2 class="section-title">From raw data to<br/><span class="text-orange">live predictions</span></h2>
+        <h2 class="section-title">From raw data to<br /><span class="text-orange">live predictions</span></h2>
       </div>
       <div class="how-steps">
         <div class="how-step" id="hs-1">
           <div class="hs-num">01</div>
           <div class="hs-icon">
-            <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_nk4jvsun.json"
-              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
           </div>
           <h3>Data Ingestion</h3>
           <p>NYC TLC FHV Aggregate Reports are pulled, cleaned, and normalized across all 59k+ monthly records.</p>
@@ -601,8 +572,7 @@
         <div class="how-step" id="hs-2">
           <div class="hs-num">02</div>
           <div class="hs-icon">
-            <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_hm1mkcgk.json"
-              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
           </div>
           <h3>Feature Engineering</h3>
           <p>Seasonal indices, vehicle ratios, lag features and base-size categories are computed for training.</p>
@@ -611,8 +581,7 @@
         <div class="how-step" id="hs-3">
           <div class="hs-num">03</div>
           <div class="hs-icon">
-            <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_qp1q7mct.json"
-              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
           </div>
           <h3>Model Training</h3>
           <p>Gradient Boosting Machine trained with 5-fold cross validation, optimized for minimal MAE.</p>
@@ -621,8 +590,7 @@
         <div class="how-step" id="hs-4">
           <div class="hs-num">04</div>
           <div class="hs-icon">
-            <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_t9gkkhz4.json"
-              background="transparent" speed="1" loop autoplay style="width:64px;height:64px;"></lottie-player>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
           </div>
           <h3>Live Inference</h3>
           <p>Enter your base parameters and receive predictions with confidence intervals in milliseconds.</p>
@@ -638,11 +606,15 @@
         <div class="footer-brand">
           <a href="#" class="nav-logo footer-logo">
             <div class="logo-icon">
-              <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#F59E0B"/><path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/></svg>
+              <svg viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="9" fill="#F59E0B" />
+                <path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white" />
+              </svg>
             </div>
             <span>RideRush</span>
           </a>
-          <p>AI-powered NYC FHV intelligence platform. Predict, analyze, and optimize for-hire vehicle dispatch performance.</p>
+          <p>AI-powered NYC FHV intelligence platform. Predict, analyze, and optimize for-hire vehicle dispatch
+            performance.</p>
           <div class="footer-socials">
             <a href="#" class="social-btn" aria-label="Twitter">𝕏</a>
             <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
@@ -682,4 +654,5 @@
 
   <script src="main.js"></script>
 </body>
+
 </html>

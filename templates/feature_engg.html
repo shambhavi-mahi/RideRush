@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% set active = 'feature' %}
+{% block title %}Feature Engineering — RideRush ML{% endblock %}
+{% block page_title %}Feature <span>Engineering</span>{% endblock %}
+{% block page_subtitle %}Scaling (Min-Max · Standard · Robust) · Nominal & Ordinal Encoding{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<!-- ── SCALING ── -->
+<div class="card">
+  <div class="card-title">Feature Scaling — First 10 Rows Preview</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab-btn="scaling" onclick="switchTab('scaling','tab-orig',this)">Original</button>
+    <button class="tab-btn" data-tab-btn="scaling" onclick="switchTab('scaling','tab-mm',this)">Min-Max Scaler</button>
+    <button class="tab-btn" data-tab-btn="scaling" onclick="switchTab('scaling','tab-ss',this)">Standard Scaler</button>
+    <button class="tab-btn" data-tab-btn="scaling" onclick="switchTab('scaling','tab-rs',this)">Robust Scaler</button>
+  </div>
+
+  <!-- Original -->
+  <div id="tab-orig" class="tab-panel active" data-tab-group="scaling">
+    <p style="font-size:12px;color:#475569;margin-bottom:10px;">Raw values from the dataset (no transformation applied).</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th>{% for col in numeric_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in orig_rows %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          {% for cell in row %}<td class="td-num">{{ cell }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Min-Max -->
+  <div id="tab-mm" class="tab-panel" data-tab-group="scaling">
+    <p style="font-size:12px;color:#475569;margin-bottom:10px;">
+      <strong style="color:#F59E0B;">MinMaxScaler</strong> — scales each feature to range [0, 1].
+      Formula: X' = (X - X_min) / (X_max - X_min)
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th>{% for col in numeric_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in mm_rows %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          {% for cell in row %}<td class="td-num td-orange">{{ cell }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Standard Scaler -->
+  <div id="tab-ss" class="tab-panel" data-tab-group="scaling">
+    <p style="font-size:12px;color:#475569;margin-bottom:10px;">
+      <strong style="color:#3B82F6;">StandardScaler</strong> — zero mean, unit variance.
+      Formula: X' = (X - mean) / std
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th>{% for col in numeric_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in ss_rows %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          {% for cell in row %}<td class="td-num td-blue">{{ cell }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Robust Scaler -->
+  <div id="tab-rs" class="tab-panel" data-tab-group="scaling">
+    <p style="font-size:12px;color:#475569;margin-bottom:10px;">
+      <strong style="color:#10B981;">RobustScaler</strong> — uses median and IQR, robust to outliers.
+      Formula: X' = (X - median) / IQR
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th>{% for col in numeric_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+        {% for row in rs_rows %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          {% for cell in row %}<td class="td-num td-green">{{ cell }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── NOMINAL ENCODING ── -->
+{% if nom_cols %}
+<div class="card">
+  <div class="card-title">Nominal Encoding (Label Encoding)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Assigns a unique integer to each category. Used for: <strong style="color:#0f172a;">{{ nom_cols|join(', ') }}</strong>
+  </p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:8px;">Original</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>{% for col in nom_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for row in nom_orig %}
+          <tr>{% for cell in row %}<td class="td-num">{{ cell }}</td>{% endfor %}</tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#F59E0B;margin-bottom:8px;">Encoded (Integer)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>{% for col in nom_cols %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+          <tbody>
+          {% for row in nom_enc %}
+          <tr>{% for cell in row %}<td class="td-num td-orange">{{ cell }}</td>{% endfor %}</tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% for col, mapping in encoders.items() %}
+  <div style="margin-top:20px;">
+    <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:8px;">
+      Encoding Map: {{ col }}
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      {% for label, code in mapping.items() %}
+      <span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:11px;">
+        <span style="color:#475569;">{{ label[:20] }}</span>
+        <span style="color:#F59E0B;font-weight:700;margin-left:6px;">→ {{ code }}</span>
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── ORDINAL ENCODING ── -->
+{% if ord_rows %}
+<div class="card">
+  <div class="card-title">Ordinal Encoding — Month Name</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Assigns integers 1–12 preserving natural month order.
+  </p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month Name</th><th>Ordinal Value</th></tr></thead>
+          <tbody>
+          {% for row in ord_rows %}
+          <tr>
+            <td>{{ row[0] }}</td>
+            <td class="td-num td-green">{{ row[1] }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#475569;margin-bottom:8px;">
+        Full Ordinal Map
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        {% for month, val in ord_map.items() %}
+        <span style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:11px;">
+          <span style="color:#475569;">{{ month[:3] }}</span>
+          <span style="color:#10B981;font-weight:700;margin-left:6px;">{{ val }}</span>
+        </span>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

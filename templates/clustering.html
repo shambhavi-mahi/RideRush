@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% set active = 'clustering' %}
+{% block title %}Clustering — RideRush ML{% endblock %}
+{% block page_title %}Unsupervised <span>Clustering</span>{% endblock %}
+{% block page_subtitle %}K-Means and Hierarchical Clustering on FHV Data{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="card">
+  <div class="card-title">Clustering Overview</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Clustering is applied to discovering inherent groupings in the data without predefined labels.
+    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
+    <span class="badge badge-purple" style="margin-left:8px;">PCA used for 2D visualization</span>
+  </p>
+
+  <div class="metrics-grid" style="margin-bottom:24px;">
+    <div class="metric">
+      <div class="m-label">Data Points</div>
+      <div class="m-value" style="font-size:22px;">{{ '{:,}'.format(metrics.n_samples) }}</div>
+      <div class="m-sub">downsampled for viz</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Features</div>
+      <div class="m-value" style="font-size:22px;">{{ metrics.n_features }}</div>
+      <div class="m-sub">numerical variables</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Clusters (k)</div>
+      <div class="m-value" style="font-size:22px;">{{ metrics.k }}</div>
+      <div class="m-sub">target groups</div>
+    </div>
+  </div>
+  
+  <p style="font-size:12px;color:#475569;margin-bottom:12px;">
+    <strong>Features used:</strong> {{ metrics.features | join(', ') }}
+  </p>
+
+</div>
+
+<div class="plots-grid" style="margin-top:24px;">
+  <!-- K-Means -->
+  <div class="plot-card">
+    <h3 class="plot-card-title">K-Means Clustering</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:12px;">
+      Partitions data into k distinct clusters by minimizing variance within each cluster.
+    </p>
+    {% if plots.kmeans_plot is defined %}
+    <img class="plot-img" src="data:image/png;base64,{{ plots.kmeans_plot }}" alt="K-Means PCA Scatter">
+    {% endif %}
+  </div>
+
+  <!-- Hierarchical -->
+  <div class="plot-card">
+    <h3 class="plot-card-title">Hierarchical (Agglomerative)</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:12px;">
+      Builds a hierarchy of clusters by repeatedly merging the two closest clusters.
+    </p>
+    {% if plots.hc_plot is defined %}
+    <img class="plot-img" src="data:image/png;base64,{{ plots.hc_plot }}" alt="Hierarchical PCA Scatter">
+    {% endif %}
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

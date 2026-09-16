@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% set active = 'regression' %}
+{% block title %}Regression — RideRush ML{% endblock %}
+{% block page_title %}Regression <span>Models</span>{% endblock %}
+{% block page_subtitle %}Simple Linear Regression · Multiple Linear Regression on FHV Data{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<!-- ── SIMPLE LINEAR REGRESSION ── -->
+<div class="card">
+  <div class="card-title">Simple Linear Regression (SLR)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ slr.target }}</strong>
+    from a single feature: <strong style="color:#3B82F6;">{{ slr.feature }}</strong>
+  </p>
+
+  <div class="eq-box">{{ slr.equation }}</div>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ slr.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(slr.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(slr.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(slr.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Coefficient</div>
+      <div class="m-value" style="font-size:20px;">{{ slr.coef }}</div>
+      <div class="m-sub">slope</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Intercept</div>
+      <div class="m-value" style="font-size:20px;">{{ slr.intercept }}</div>
+      <div class="m-sub">bias</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Train Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(slr.n_train) }}</div>
+      <div class="m-sub">rows (80%)</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Test Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(slr.n_test) }}</div>
+      <div class="m-sub">rows (20%)</div>
+    </div>
+  </div>
+
+  {% if plots.slr is defined %}
+  <img class="plot-img" src="data:image/png;base64,{{ plots.slr }}" alt="SLR Plots">
+  {% endif %}
+</div>
+
+<!-- ── MULTIPLE LINEAR REGRESSION ── -->
+<div class="card">
+  <div class="card-title">Multiple Linear Regression (MLR)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ mlr.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ mlr.features | join(' · ') }}</strong>
+    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ mlr.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(mlr.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(mlr.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(mlr.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Intercept</div>
+      <div class="m-value" style="font-size:20px;">{{ mlr.intercept }}</div>
+      <div class="m-sub">bias term</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Train Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(mlr.n_train) }}</div>
+      <div class="m-sub">rows (80%)</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Test Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(mlr.n_test) }}</div>
+      <div class="m-sub">rows (20%)</div>
+    </div>
+  </div>
+
+  <!-- Coefficients table -->
+  <div style="margin-bottom:20px;">
+    <div class="card-title" style="margin-bottom:12px;">Feature Coefficients (on scaled data)</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Feature</th><th>Coefficient</th><th>Direction</th></tr>
+        </thead>
+        <tbody>
+        {% for c in mlr.coefs %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          <td><strong>{{ c.feature }}</strong></td>
+          <td class="td-num {% if c.coef > 0 %}td-orange{% else %}td-red{% endif %}">
+            {{ c.coef }}
+          </td>
+          <td>
+            {% if c.coef > 0 %}
+              <span class="badge badge-green">↑ Positive</span>
+            {% else %}
+              <span class="badge badge-red">↓ Negative</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if plots.mlr is defined %}
+  <img class="plot-img" src="data:image/png;base64,{{ plots.mlr }}" alt="MLR Plots">
+  {% endif %}
+</div>
+
+<!-- ── RIDGE REGRESSION ── -->
+{% if ridge is defined %}
+<div class="card">
+  <div class="card-title">Ridge Regression (L2 Regularization)</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ ridge.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ ridge.features | join(' · ') }}</strong>
+    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
+    <span class="badge badge-purple" style="margin-left:8px;">Alpha = {{ ridge.alpha }}</span>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">R² Score</div>
+      <div class="m-value">{{ ridge.r2 }}</div>
+      <div class="m-sub">coefficient of determination</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ridge.mse) }}</div>
+      <div class="m-sub">mean squared error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">MAE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ridge.mae) }}</div>
+      <div class="m-sub">mean absolute error</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">RMSE</div>
+      <div class="m-value" style="font-size:18px;">{{ '{:,.0f}'.format(ridge.rmse) }}</div>
+      <div class="m-sub">root MSE</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px; margin-top:20px;">
+    <div class="card-title" style="margin-bottom:12px;">Feature Coefficients (on scaled data)</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Feature</th><th>Coefficient</th><th>Direction</th></tr>
+        </thead>
+        <tbody>
+        {% for c in ridge.coefs %}
+        <tr>
+          <td class="td-num" style="color:#475569;">{{ loop.index }}</td>
+          <td><strong>{{ c.feature }}</strong></td>
+          <td class="td-num {% if c.coef > 0 %}td-orange{% else %}td-red{% endif %}">
+            {{ c.coef }}
+          </td>
+          <td>
+            {% if c.coef > 0 %}
+              <span class="badge badge-green">↑ Positive</span>
+            {% else %}
+              <span class="badge badge-red">↓ Negative</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if plots.ridge is defined %}
+  <img class="plot-img" src="data:image/png;base64,{{ plots.ridge }}" alt="Ridge Plots">
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- ── LOGISTIC REGRESSION ── -->
+{% if logr is defined %}
+<div class="card">
+  <div class="card-title">Logistic Regression</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Predicts <strong style="color:#F59E0B;">{{ logr.target }}</strong>
+    from features: <strong style="color:#3B82F6;">{{ logr.features | join(' · ') }}</strong>
+    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
+  </p>
+
+  <div class="metrics-grid">
+    <div class="metric">
+      <div class="m-label">Accuracy</div>
+      <div class="m-value" style="font-size:20px;">{{ logr.accuracy }}</div>
+      <div class="m-sub">correct predictions</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Train Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(logr.n_train) }}</div>
+      <div class="m-sub">rows (80%)</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Test Size</div>
+      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(logr.n_test) }}</div>
+      <div class="m-sub">rows (20%)</div>
+    </div>
+  </div>
+
+  {% if plots.logr is defined %}
+  <img class="plot-img" src="data:image/png;base64,{{ plots.logr }}" alt="Logistic Regression Plots" style="max-width:400px; margin-top:20px;">
+  {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

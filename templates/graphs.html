@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% set active = 'graphs' %}
+{% block title %}Graphs — RideRush ML{% endblock %}
+{% block page_title %}<span>Graphs</span> & Visualizations{% endblock %}
+{% block page_subtitle %}9 charts generated from the FHV NYC Dataset using Matplotlib{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="plots-grid">
+
+  {% if plots.hist_trips is defined %}
+  <div class="plot-card">
+    <h3>Distribution — Total Dispatched Trips</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.hist_trips }}" alt="Trips Histogram">
+  </div>
+  {% endif %}
+
+  {% if plots.hist_veh is defined %}
+  <div class="plot-card">
+    <h3>Distribution — Unique Dispatched Vehicles</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.hist_veh }}" alt="Vehicles Histogram">
+  </div>
+  {% endif %}
+
+  {% if plots.bar_month is defined %}
+  <div class="plot-card">
+    <h3>Average Dispatched Trips by Month</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.bar_month }}" alt="Monthly Bar Chart">
+  </div>
+  {% endif %}
+
+  {% if plots.line_year is defined %}
+  <div class="plot-card">
+    <h3>Average Trips Trend by Year</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.line_year }}" alt="Yearly Line Chart">
+  </div>
+  {% endif %}
+
+  {% if plots.scatter_vt is defined %}
+  <div class="plot-card">
+    <h3>Scatter — Vehicles vs Total Dispatched Trips</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.scatter_vt }}" alt="Vehicles vs Trips Scatter">
+  </div>
+  {% endif %}
+
+  {% if plots.scatter_st is defined %}
+  <div class="plot-card">
+    <h3>Scatter — Shared Trips vs Total Trips</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.scatter_st }}" alt="Shared vs Total Scatter">
+  </div>
+  {% endif %}
+
+  {% if plots.heatmap is defined %}
+  <div class="plot-card" style="grid-column:1/-1;">
+    <h3>Correlation Heatmap</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.heatmap }}" alt="Correlation Heatmap" style="max-width:600px; display:block; margin:auto;">
+  </div>
+  {% endif %}
+
+  {% if plots.boxplot is defined %}
+  <div class="plot-card" style="grid-column:1/-1;">
+    <h3>Box Plots — Numeric Columns</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.boxplot }}" alt="Box Plots">
+  </div>
+  {% endif %}
+
+  {% if plots.top_bases is defined %}
+  <div class="plot-card" style="grid-column:1/-1;">
+    <h3>Top 10 Bases by Total Dispatched Trips</h3>
+    <img class="plot-img" src="data:image/png;base64,{{ plots.top_bases }}" alt="Top 10 Bases">
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
+{% endblock %}

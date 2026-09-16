@@ -65,7 +65,7 @@
     });
 
     const points = new THREE.Points(ptGeo, ptMat);
-    scene.add(points);
+    // scene.add(points); // Yellow dots removed per user request
 
     // ---- Connection Lines ----
     const linePositions = new Float32Array(MAX_LINES * 2 * 3);
@@ -82,7 +82,7 @@
     });
 
     const lineSegments = new THREE.LineSegments(lineGeo, lineMat);
-    scene.add(lineSegments);
+    // scene.add(lineSegments); // Lines removed per user request
 
     // ---- Secondary smaller white particles ----
     const COUNT2 = 60;
