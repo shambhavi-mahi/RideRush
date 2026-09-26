@@ -14,96 +14,87 @@
     const canvas = document.getElementById('hero-canvas');
     if (!canvas || typeof THREE === 'undefined') return;
 
-    // Renderer
+    // ---- New Solid 3D Scene ----
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
 
-    // Scene & Camera
     const scene = new THREE.Scene();
     const W = canvas.clientWidth  || window.innerWidth;
     const H = canvas.clientHeight || window.innerHeight;
     const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
-    camera.position.z = 90;
+    camera.position.z = 100;
 
     renderer.setSize(W, H);
 
-    // ---- Particles ----
-    const COUNT       = 180;
-    const SPREAD_X    = 140;
-    const SPREAD_Y    = 90;
-    const SPREAD_Z    = 60;
-    const MAX_DIST    = 28;        // max distance for line connection
-    const MAX_LINES   = 500;
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(50, 50, 50);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
 
-    const positions  = new Float32Array(COUNT * 3);
-    const velocities = [];
-    const sizes      = new Float32Array(COUNT);
+    // Solid Torus Knot
+    const geom = new THREE.TorusKnotGeometry(20, 9, 256, 64, 2, 3);
+    const mat = new THREE.MeshPhysicalMaterial({ 
+        color: 0xF59E0B, 
+        roughness: 0.15, 
+        metalness: 0.1,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.2
+    });
+    const torus = new THREE.Mesh(geom, mat);
+    torus.position.set(-35, 5, 10); torus.castShadow = true; torus.receiveShadow = true; // Left side
+    scene.add(torus);
+
+    // Sine Wave Particle Network
+    
+    const COUNT = 3500;
+    const pos = new Float32Array(COUNT * 3);
+    const colors = new Float32Array(COUNT * 3);
+    const sizes = new Float32Array(COUNT);
+    const color1 = new THREE.Color(0x3B82F6); // Blue
+    const color2 = new THREE.Color(0xF59E0B); // Orange
 
     for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * SPREAD_X;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * SPREAD_Y;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * SPREAD_Z;
-      velocities.push({
-        x: (Math.random() - 0.5) * 0.018,
-        y: (Math.random() - 0.5) * 0.012,
-        z: (Math.random() - 0.5) * 0.008,
-      });
-      sizes[i] = Math.random() * 1.5 + 0.5;
+      const x = (Math.random() - 0.5) * 350; // wider spread
+      const z = (Math.random() - 0.5) * 120;
+      pos[i * 3] = x;
+      pos[i * 3 + 1] = 0;
+      pos[i * 3 + 2] = z;
+      
+      // Left (-x) is more orange, Right (+x) is more blue
+      const normalizedX = (x + 175) / 350; 
+      // Add some random noise to the crossover
+      const isBlue = (Math.random() + 0.3 * (Math.random()-0.5)) < normalizedX;
+      
+      const c = isBlue ? color1 : color2;
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
+      
+      sizes[i] = Math.random() * 2.5 + 0.5; // size variation
     }
 
     const ptGeo = new THREE.BufferGeometry();
-    ptGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    ptGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    ptGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     ptGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
     const ptMat = new THREE.PointsMaterial({
-      color: 0xF59E0B,
-      size: 1.2,
+      size: 1.5,
+      vertexColors: true,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.85,
       sizeAttenuation: true,
     });
+const points = new THREE.Points(ptGeo, ptMat);
+    scene.add(points);
 
-    const points = new THREE.Points(ptGeo, ptMat);
-    // scene.add(points); // Yellow dots removed per user request
-
-    // ---- Connection Lines ----
-    const linePositions = new Float32Array(MAX_LINES * 2 * 3);
-    const lineOpacities = new Float32Array(MAX_LINES * 2);
-
-    const lineGeo = new THREE.BufferGeometry();
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-    lineGeo.setDrawRange(0, 0);
-
-    const lineMat = new THREE.LineBasicMaterial({
-      color: 0xF59E0B,
-      transparent: true,
-      opacity: 0.18,
-    });
-
-    const lineSegments = new THREE.LineSegments(lineGeo, lineMat);
-    // scene.add(lineSegments); // Lines removed per user request
-
-    // ---- Secondary smaller white particles ----
-    const COUNT2 = 60;
-    const pos2   = new Float32Array(COUNT2 * 3);
-    for (let i = 0; i < COUNT2; i++) {
-      pos2[i * 3]     = (Math.random() - 0.5) * SPREAD_X * 1.3;
-      pos2[i * 3 + 1] = (Math.random() - 0.5) * SPREAD_Y * 1.3;
-      pos2[i * 3 + 2] = (Math.random() - 0.5) * SPREAD_Z;
-    }
-    const ptGeo2 = new THREE.BufferGeometry();
-    ptGeo2.setAttribute('position', new THREE.BufferAttribute(pos2, 3));
-    const ptMat2 = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 0.4,
-      transparent: true,
-      opacity: 0.3,
-      sizeAttenuation: true,
-    });
-    scene.add(new THREE.Points(ptGeo2, ptMat2));
-
-    // ---- Mouse Tracking ----
+    // Mouse Tracking
     let targetX = 0, targetY = 0;
     let camX = 0, camY = 0;
     window.addEventListener('mousemove', (e) => {
@@ -111,7 +102,6 @@
       targetY = -(e.clientY / window.innerHeight - 0.5) * 8;
     }, { passive: true });
 
-    // ---- Resize ----
     window.addEventListener('resize', () => {
       const w = canvas.clientWidth  || window.innerWidth;
       const h = canvas.clientHeight || window.innerHeight;
@@ -120,70 +110,35 @@
       renderer.setSize(w, h);
     }, { passive: true });
 
-    // ---- Clock for time-based effects ----
     const clock = new THREE.Clock();
 
-    // ---- Animation Loop ----
     function animate() {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      // Smooth camera parallax following mouse
-      camX += (targetX - camX) * 0.025;
-      camY += (targetY - camY) * 0.025;
+      camX += (targetX - camX) * 0.05;
+      camY += (targetY - camY) * 0.05;
       camera.position.x = camX;
       camera.position.y = camY;
       camera.lookAt(scene.position);
 
-      // Update particle positions (drift + soft boundary wrap)
+      torus.rotation.x = elapsed * 0.2;
+      torus.rotation.y = elapsed * 0.3;
+
+      
+      const pArr = ptGeo.attributes.position.array;
       for (let i = 0; i < COUNT; i++) {
-        const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-        positions[ix] += velocities[i].x;
-        positions[iy] += velocities[i].y;
-        positions[iz] += velocities[i].z;
-        // Wrap at boundaries
-        if (positions[ix]  >  SPREAD_X / 2) positions[ix]  = -SPREAD_X / 2;
-        if (positions[ix]  < -SPREAD_X / 2) positions[ix]  =  SPREAD_X / 2;
-        if (positions[iy]  >  SPREAD_Y / 2) positions[iy]  = -SPREAD_Y / 2;
-        if (positions[iy]  < -SPREAD_Y / 2) positions[iy]  =  SPREAD_Y / 2;
-        if (positions[iz]  >  SPREAD_Z / 2) positions[iz]  = -SPREAD_Z / 2;
-        if (positions[iz]  < -SPREAD_Z / 2) positions[iz]  =  SPREAD_Z / 2;
+        const x = pArr[i * 3];
+        const z = pArr[i * 3 + 2];
+        // Complex overlapping sine waves
+        const wave1 = Math.sin(x * 0.02 + elapsed * 0.8) * 20;
+        const wave2 = Math.cos(x * 0.015 - elapsed * 0.5 + z * 0.01) * 15;
+        const wave3 = Math.sin(z * 0.03 + elapsed) * 5;
+        pArr[i * 3 + 1] = wave1 + wave2 + wave3;
       }
       ptGeo.attributes.position.needsUpdate = true;
-
-      // Pulse opacity of points
-      ptMat.opacity = 0.55 + Math.sin(elapsed * 0.8) * 0.2;
-
-      // Slow rotation of whole particle field
-      points.rotation.y = elapsed * 0.04;
-      points.rotation.x = elapsed * 0.015;
-
-      // Rebuild line connections
-      let lineCount = 0;
-      const lp = lineGeo.attributes.position.array;
-
-      for (let a = 0; a < COUNT && lineCount < MAX_LINES; a++) {
-        const ax = positions[a * 3], ay = positions[a * 3 + 1], az = positions[a * 3 + 2];
-        for (let b = a + 1; b < COUNT && lineCount < MAX_LINES; b++) {
-          const dx = ax - positions[b * 3];
-          const dy = ay - positions[b * 3 + 1];
-          const dz = az - positions[b * 3 + 2];
-          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-          if (dist < MAX_DIST) {
-            const idx = lineCount * 6;
-            lp[idx]     = ax;  lp[idx + 1] = ay;  lp[idx + 2] = az;
-            lp[idx + 3] = positions[b * 3]; lp[idx + 4] = positions[b * 3 + 1]; lp[idx + 5] = positions[b * 3 + 2];
-            lineCount++;
-          }
-        }
-      }
-      lineGeo.attributes.position.needsUpdate = true;
-      lineGeo.setDrawRange(0, lineCount * 2);
-      lineMat.opacity = 0.10 + Math.sin(elapsed * 0.5) * 0.06;
-
-      renderer.render(scene, camera);
+renderer.render(scene, camera);
     }
-
     animate();
   })();
 
@@ -442,7 +397,7 @@
   /* =====================================================
      6. HERO BG image zoom on load
      ===================================================== */
-  const heroBgImg = document.getElementById('hero-bg-img');
+  const heroBgImg = document.getElementById('hero-bg-img') || document.querySelector('.hero-bg-light');
   if (heroBgImg) {
     if (heroBgImg.complete) heroBgImg.classList.add('loaded');
     else heroBgImg.addEventListener('load', () => heroBgImg.classList.add('loaded'));
@@ -454,7 +409,7 @@
      ===================================================== */
   const boroughs = ['Manhattan', 'Brooklyn', 'Queens', 'The Bronx', 'Staten Island'];
   let titleIdx = 0;
-  const heroTitle = document.getElementById('hero-title');
+  const heroTitle = document.querySelector('.hc-title');
   if (heroTitle && typeof gsap !== 'undefined') {
     setInterval(() => {
       gsap.to(heroTitle, {
@@ -691,8 +646,8 @@
   /* =====================================================
      13. SEARCH BAR
      ===================================================== */
-  const searchBtn  = document.getElementById('search-btn');
-  const heroSearch = document.getElementById('hero-search');
+  const searchBtn  = document.querySelector('.hc-search-btn');
+  const heroSearch = document.querySelector('.hc-search-input');
   if (searchBtn && heroSearch) {
     searchBtn.addEventListener('click', () => console.log('Search:', heroSearch.value.trim()));
     heroSearch.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchBtn.click(); });

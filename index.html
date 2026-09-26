@@ -25,104 +25,33 @@
 <body>
 
   <!-- =============================== NAVBAR =============================== -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo" id="logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 32 32" fill="none">
-            <rect width="32" height="32" rx="9" fill="#F59E0B" />
-            <path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white" />
-          </svg>
-        </div>
-        <span>RideRush</span>
-      </a>
-
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#deals">Reports</a></li>
-        <li><a href="#analytics">Analytics</a></li>
-        <li><a href="#predict">Predict</a></li>
-        <li><a href="#insights">Insights</a></li>
-        <li><a href="/load-data" style="color:#F59E0B;font-weight:600;">📊 Dashboard</a></li>
-      </ul>
-
-      <div class="nav-right">
-        <button class="nav-lang-btn" id="lang-btn">EN ↓</button>
-        <a href="/load-data" class="btn-orange" id="nav-cta">Dashboard →</a>
-        <button class="hamburger" id="hamburger" aria-label="Menu">
-          <span></span><span></span><span></span>
-        </button>
+  <nav class="navbar-new" id="navbar">
+    <div class="nav-inner-new">
+      <a href="#" class="nav-brand-new">RideRush</a>
+      <div class="nav-links-center">
+        <a href="#product">Product</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#pricing">Pricing</a>
       </div>
-    </div>
-    <div class="mobile-menu" id="mobile-menu">
-      <a href="#deals">Reports</a>
-      <a href="#analytics">Analytics</a>
-      <a href="#predict">Predict</a>
-      <a href="#insights">Insights</a>
+      <div class="nav-actions-new">
+        <a href="/login" class="nav-login">Login</a>
+        <a href="/load-data" class="nav-btn-dark">Get Started</a>
+      </div>
     </div>
   </nav>
 
   <!-- =============================== HERO =============================== -->
-  <section class="hero" id="hero">
-    <!-- Background Image -->
-    <div class="hero-bg">
-      <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1800&q=85"
-        alt="NYC Skyline at night" class="hero-bg-img" id="hero-bg-img" />
-      <div class="hero-bg-overlay"></div>
-    </div>
-
-    <!-- Three.js Particle Network Canvas -->
+  <section class="hero-new" id="hero">
+    <div class="hero-bg-light"></div>
     <canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
 
-    <!-- Left Content -->
-    <div class="hero-content">
-      <div class="hero-location-chip">
-        <span class="chip-dot"></span>
-        <span>New York City, USA</span>
-      </div>
+    <div class="hero-center-content">
+      <h1 class="hc-title">RideRush</h1>
+      <p class="hc-subtitle">NYC's #1 FHV Dispatch Network</p>
 
-      <h1 class="hero-title" id="hero-title">RideRush</h1>
-      <p class="hero-subtitle">NYC's #1 FHV Dispatch Network</p>
-
-      <div class="hero-meta">
-        <div class="hero-meta-item">
-          <span class="meta-label">MONTHLY TRIPS</span>
-          <span class="meta-val orange">42,667+</span>
-        </div>
-        <button class="hero-info-btn" id="info-btn" aria-label="Info">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
-            <path fill-rule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-              clip-rule="evenodd" />
-          </svg>
-        </button>
-        <a href="#predict" class="btn-orange" id="hero-book-btn">Predict Now →</a>
-      </div>
-
-      <div class="hero-selectors">
-        <div class="selector-item">
-          <span class="selector-label">DATE</span>
-          <select class="hero-select" id="hero-date">
-            <option>Jan 2026 ↓</option>
-            <option>Feb 2026</option>
-            <option>Mar 2026</option>
-            <option>Aug 2026</option>
-          </select>
-        </div>
-        <div class="selector-item">
-          <span class="selector-label">FLEET SIZE</span>
-          <select class="hero-select" id="hero-fleet">
-            <option>2×2 ↓</option>
-            <option>1×1</option>
-            <option>5+×5+</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="hero-search-wrap">
-        <input type="text" class="hero-search" id="hero-search"
-          placeholder='Try searching "SEAMAN RADIO DISPATCHERS"...' />
-        <button class="search-btn" id="search-btn" aria-label="Search">
+      <div class="hc-search-glass">
+        <input type="text" placeholder="Enter your location or fleet data" class="hc-search-input" />
+        <button class="hc-search-btn" aria-label="Search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.35-4.35" />
@@ -131,29 +60,52 @@
       </div>
     </div>
 
-    <!-- Right Mini Cards -->
-    <div class="hero-cards" id="hero-cards">
-      <div class="hero-mini-card" id="hmc-1"
-        style="background-image:url('https://images.unsplash.com/photo-1516733968668-dbdce39c4651?auto=format&fit=crop&w=400&q=80')">
-        <div class="hmc-overlay"></div>
-        <div class="hmc-tag">HIGH VOLUME</div>
-        <div class="hmc-name">Brooklyn</div>
+    <!-- Stat Cards Overlay -->
+    <div class="hero-stats-row">
+      <div class="hs-card">
+        <div class="hs-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="hs-title">Active Drivers</div>
+        <div class="hs-val" data-count="2538">0</div>
+        <div class="hs-chart">
+           <svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 C20,20 40,30 60,10 C80,-10 100,20 100,20 L100,30 L0,30 Z" fill="url(#orange-grad)"/></svg>
+        </div>
       </div>
-      <div class="hero-mini-card" id="hmc-2"
-        style="background-image:url('https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80')">
-        <div class="hmc-overlay"></div>
-        <div class="hmc-tag">TRENDING</div>
-        <div class="hmc-name">Queens</div>
+      <div class="hs-card">
+        <div class="hs-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="8" y2="16"/><line x1="16" y1="10" x2="16" y2="16"/></svg></div>
+        <div class="hs-title">Trip Volume</div>
+        <div class="hs-val" data-count="1878">0</div>
+        <div class="hs-chart">
+           <svg viewBox="0 0 100 30" preserveAspectRatio="none"><rect x="10" y="15" width="8" height="15" fill="#F59E0B"/><rect x="25" y="10" width="8" height="20" fill="#F59E0B"/><rect x="40" y="20" width="8" height="10" fill="#F59E0B"/><rect x="55" y="5" width="8" height="25" fill="#F59E0B"/><rect x="70" y="12" width="8" height="18" fill="#F59E0B"/><rect x="85" y="8" width="8" height="22" fill="#F59E0B"/></svg>
+        </div>
+      </div>
+      <div class="hs-card">
+        <div class="hs-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="hs-title">Average Wait Time</div>
+        <div class="hs-val">25.23min</div>
+        <div class="hs-chart">
+           <svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 C30,25 60,5 100,15 L100,30 L0,30 Z" fill="url(#orange-grad)"/></svg>
+        </div>
+      </div>
+      <div class="hs-card">
+        <div class="hs-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="hs-title">Revenue Optimization</div>
+        <div class="hs-val">$75.83M</div>
+        <div class="hs-chart">
+           <svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 C30,20 50,25 70,10 C85,0 100,10 100,10 L100,30 L0,30 Z" fill="url(#orange-grad)"/></svg>
+        </div>
       </div>
     </div>
-
-    <!-- Scroll Indicator -->
-    <div class="scroll-indicator" id="scroll-indicator">
-      <div class="scroll-line"></div>
-      <span>EXPLORE DATA</span>
-    </div>
+    
+    <svg style="position:absolute; width:0; height:0;">
+      <defs>
+        <linearGradient id="orange-grad" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="rgba(245,158,11,0.5)"/>
+          <stop offset="100%" stop-color="rgba(245,158,11,0.0)"/>
+        </linearGradient>
+      </defs>
+    </svg>
   </section>
-
+  
   <!-- =============================== DEALS / REPORTS =============================== -->
   <section class="deals-section" id="deals">
     <div class="deals-inner">
