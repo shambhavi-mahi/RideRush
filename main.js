@@ -402,11 +402,15 @@
     // --- Number counters triggered by ScrollTrigger ---
     document.querySelectorAll('[data-count]').forEach(el => {
       const target = parseInt(el.getAttribute('data-count'), 10);
-      gsap.fromTo({ val: 0 }, { val: target,
+      const proxy  = { val: 0 };
+      gsap.to(proxy, {
+        val: target,
         duration: 2.2,
         ease: 'power2.out',
-        onUpdate: function () { el.textContent = Math.round(this.targets()[0].val).toLocaleString(); },
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
+        onUpdate: function () {
+          el.textContent = Math.round(proxy.val).toLocaleString();
+        },
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true }
       });
     });
 
