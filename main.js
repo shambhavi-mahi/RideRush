@@ -41,20 +41,6 @@
     fillLight.position.set(-40, -20, 30);
     scene.add(fillLight);
 
-    // ---- Solid Golden Torus Knot (lower-left) ----
-    const torusGeom = new THREE.TorusKnotGeometry(16, 7.5, 256, 64, 2, 3);
-    const torusMat  = new THREE.MeshPhysicalMaterial({
-      color: 0xF59E0B,
-      roughness: 0.12,
-      metalness: 0.08,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.15,
-    });
-    const torus = new THREE.Mesh(torusGeom, torusMat);
-    torus.position.set(-42, -12, 15);
-    torus.castShadow = true;
-    torus.receiveShadow = true;
-    scene.add(torus);
 
     // ---- Particle Wave Field ----
     const COUNT = 4500;
@@ -88,10 +74,10 @@
     ptGeo.setAttribute('color',    new THREE.BufferAttribute(clrs, 3));
 
     const ptMat = new THREE.PointsMaterial({
-      size: 1.6,
+      size: 0.9,
       vertexColors: true,
       transparent: true,
-      opacity: 0.9,
+      opacity: 0.85,
       sizeAttenuation: true,
     });
     const points = new THREE.Points(ptGeo, ptMat);
@@ -128,9 +114,6 @@
       camera.position.y = 5 + camY;
       camera.lookAt(0, 0, 0);
 
-      // Torus rotation
-      torus.rotation.x = t * 0.18;
-      torus.rotation.y = t * 0.25;
 
       // Animate wave
       const pArr = ptGeo.attributes.position.array;
