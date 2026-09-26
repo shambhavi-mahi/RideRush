@@ -14,7 +14,9 @@
     const canvas = document.getElementById('hero-canvas');
     if (!canvas || typeof THREE === 'undefined') return;
 
-    // ---- New Solid 3D Scene ----
+    // Allow mouse interaction on canvas
+    canvas.style.pointerEvents = 'auto';
+
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -24,84 +26,86 @@
     const scene = new THREE.Scene();
     const W = canvas.clientWidth  || window.innerWidth;
     const H = canvas.clientHeight || window.innerHeight;
-    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
-    camera.position.z = 100;
+    const camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 1000);
+    camera.position.set(0, 5, 110);
 
     renderer.setSize(W, H);
 
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(50, 50, 50);
+    // ---- Lighting ----
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    dirLight.position.set(60, 80, 60);
     dirLight.castShadow = true;
     scene.add(dirLight);
+    const fillLight = new THREE.DirectionalLight(0xF59E0B, 0.3);
+    fillLight.position.set(-40, -20, 30);
+    scene.add(fillLight);
 
-    // Solid Torus Knot
-    const geom = new THREE.TorusKnotGeometry(20, 9, 256, 64, 2, 3);
-    const mat = new THREE.MeshPhysicalMaterial({ 
-        color: 0xF59E0B, 
-        roughness: 0.15, 
-        metalness: 0.1,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.2
+    // ---- Solid Golden Torus Knot (lower-left) ----
+    const torusGeom = new THREE.TorusKnotGeometry(16, 7.5, 256, 64, 2, 3);
+    const torusMat  = new THREE.MeshPhysicalMaterial({
+      color: 0xF59E0B,
+      roughness: 0.12,
+      metalness: 0.08,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.15,
     });
-    const torus = new THREE.Mesh(geom, mat);
-    torus.position.set(-35, 5, 10); torus.castShadow = true; torus.receiveShadow = true; // Left side
+    const torus = new THREE.Mesh(torusGeom, torusMat);
+    torus.position.set(-42, -12, 15);
+    torus.castShadow = true;
+    torus.receiveShadow = true;
     scene.add(torus);
 
-    // Sine Wave Particle Network
-    
-    const COUNT = 3500;
-    const pos = new Float32Array(COUNT * 3);
-    const colors = new Float32Array(COUNT * 3);
-    const sizes = new Float32Array(COUNT);
-    const color1 = new THREE.Color(0x3B82F6); // Blue
-    const color2 = new THREE.Color(0xF59E0B); // Orange
+    // ---- Particle Wave Field ----
+    const COUNT = 4500;
+    const baseX = new Float32Array(COUNT);   // store original X for color mapping
+    const pos   = new Float32Array(COUNT * 3);
+    const clrs  = new Float32Array(COUNT * 3);
+
+    const colOrange = new THREE.Color(0xF59E0B);
+    const colNavy   = new THREE.Color(0x1e3a5f);
 
     for (let i = 0; i < COUNT; i++) {
-      const x = (Math.random() - 0.5) * 350; // wider spread
-      const z = (Math.random() - 0.5) * 120;
-      pos[i * 3] = x;
-      pos[i * 3 + 1] = 0;
-      pos[i * 3 + 2] = z;
-      
-      // Left (-x) is more orange, Right (+x) is more blue
-      const normalizedX = (x + 175) / 350; 
-      // Add some random noise to the crossover
-      const isBlue = (Math.random() + 0.3 * (Math.random()-0.5)) < normalizedX;
-      
-      const c = isBlue ? color1 : color2;
-      colors[i * 3] = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
-      
-      sizes[i] = Math.random() * 2.5 + 0.5; // size variation
+      // Spread particles across a wide horizontal band, biased right
+      const x = (Math.random() - 0.35) * 320;
+      const z = (Math.random() - 0.5) * 100;
+      baseX[i]        = x;
+      pos[i * 3]      = x;
+      pos[i * 3 + 1]  = 0;
+      pos[i * 3 + 2]  = z;
+
+      // Color gradient: orange on far-left → blended middle → dark navy on far-right
+      const t = Math.min(1, Math.max(0, (x + 120) / 280));
+      const noisy = Math.min(1, Math.max(0, t + (Math.random() - 0.5) * 0.15));
+      const c = new THREE.Color().lerpColors(colOrange, colNavy, noisy);
+      clrs[i * 3]     = c.r;
+      clrs[i * 3 + 1] = c.g;
+      clrs[i * 3 + 2] = c.b;
     }
 
     const ptGeo = new THREE.BufferGeometry();
     ptGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    ptGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    ptGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+    ptGeo.setAttribute('color',    new THREE.BufferAttribute(clrs, 3));
 
     const ptMat = new THREE.PointsMaterial({
-      size: 1.5,
+      size: 1.6,
       vertexColors: true,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.9,
       sizeAttenuation: true,
     });
-const points = new THREE.Points(ptGeo, ptMat);
+    const points = new THREE.Points(ptGeo, ptMat);
+    points.position.set(10, -5, 0);   // shift wave band slightly right & down
     scene.add(points);
 
-    // Mouse Tracking
-    let targetX = 0, targetY = 0;
-    let camX = 0, camY = 0;
+    // ---- Mouse Parallax ----
+    let mx = 0, my = 0, camX = 0, camY = 0;
     window.addEventListener('mousemove', (e) => {
-      targetX = (e.clientX / window.innerWidth  - 0.5) * 14;
-      targetY = -(e.clientY / window.innerHeight - 0.5) * 8;
+      mx = (e.clientX / window.innerWidth  - 0.5) * 12;
+      my = -(e.clientY / window.innerHeight - 0.5) * 6;
     }, { passive: true });
 
+    // ---- Resize ----
     window.addEventListener('resize', () => {
       const w = canvas.clientWidth  || window.innerWidth;
       const h = canvas.clientHeight || window.innerHeight;
@@ -110,34 +114,37 @@ const points = new THREE.Points(ptGeo, ptMat);
       renderer.setSize(w, h);
     }, { passive: true });
 
+    // ---- Render Loop ----
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
+      const t = clock.getElapsedTime();
 
-      camX += (targetX - camX) * 0.05;
-      camY += (targetY - camY) * 0.05;
+      // Smooth camera follow
+      camX += (mx - camX) * 0.04;
+      camY += (my - camY) * 0.04;
       camera.position.x = camX;
-      camera.position.y = camY;
-      camera.lookAt(scene.position);
+      camera.position.y = 5 + camY;
+      camera.lookAt(0, 0, 0);
 
-      torus.rotation.x = elapsed * 0.2;
-      torus.rotation.y = elapsed * 0.3;
+      // Torus rotation
+      torus.rotation.x = t * 0.18;
+      torus.rotation.y = t * 0.25;
 
-      
+      // Animate wave
       const pArr = ptGeo.attributes.position.array;
       for (let i = 0; i < COUNT; i++) {
-        const x = pArr[i * 3];
+        const x = baseX[i];
         const z = pArr[i * 3 + 2];
-        // Complex overlapping sine waves
-        const wave1 = Math.sin(x * 0.02 + elapsed * 0.8) * 20;
-        const wave2 = Math.cos(x * 0.015 - elapsed * 0.5 + z * 0.01) * 15;
-        const wave3 = Math.sin(z * 0.03 + elapsed) * 5;
-        pArr[i * 3 + 1] = wave1 + wave2 + wave3;
+        const w1 = Math.sin(x * 0.022 + t * 0.7) * 18;
+        const w2 = Math.cos(x * 0.014 - t * 0.45 + z * 0.012) * 12;
+        const w3 = Math.sin(z * 0.028 + t * 0.9) * 6;
+        pArr[i * 3 + 1] = w1 + w2 + w3;
       }
       ptGeo.attributes.position.needsUpdate = true;
-renderer.render(scene, camera);
+
+      renderer.render(scene, camera);
     }
     animate();
   })();
