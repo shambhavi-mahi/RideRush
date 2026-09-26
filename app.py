@@ -8,10 +8,11 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, LabelEncoder
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor, IsolationForest
 from sklearn.tree import DecisionTreeRegressor, plot_tree
-from sklearn.cluster import KMeans, AgglomerativeClustering
+from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.decomposition import PCA
+import umap
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
@@ -587,26 +588,59 @@ def clustering_page():
     # 2. Hierarchical (Agglomerative)
     hc = AgglomerativeClustering(n_clusters=3)
     hc_labels = hc.fit_predict(Xs)
+
+    # 3. DBSCAN
+    dbscan = DBSCAN(eps=0.5, min_samples=5)
+    db_labels = dbscan.fit_predict(Xs)
+
+    # PCA for Scree Plot
+    pca_full = PCA()
+    pca_full.fit(Xs)
+    explained_variance = pca_full.explained_variance_ratio_ * 100
+    cumulative_variance = np.cumsum(explained_variance)
+
+    # Plot Scree
+    fig, ax = plt.subplots(figsize=(7, 5))
+    ax.bar(range(1, len(explained_variance) + 1), explained_variance, alpha=0.6, color='#60A5FA')
+    ax.plot(range(1, len(explained_variance) + 1), cumulative_variance, marker='o', color='#F59E0B')
+    ax.set_title('PCA Explained Variance (Scree Plot)', fontsize=11, fontweight='bold')
+    ax.set_xlabel('Principal Component')
+    ax.set_ylabel('Variance Explained (%)')
+    ax.set_xticks(range(1, len(explained_variance) + 1))
+    ax.grid(True, color='#475569', linewidth=1)
+    ax.set_facecolor('#ffffff')
+    plt.tight_layout()
+    plots['scree_plot'] = fig_b64(fig)
     
     # Dimensionality Reduction for plotting 2D
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(Xs)
+    reducer = umap.UMAP(n_components=2, random_state=42)
+    X_umap = reducer.fit_transform(Xs)
     
     # Plot KMeans
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=km_labels, cmap='viridis', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('K-Means Clustering (3 Clusters) - PCA Projection', fontsize=11, fontweight='bold')
-    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
-    ax.grid(True, alpha=0.7); plt.tight_layout()
+    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=km_labels, cmap='viridis', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('K-Means Clustering (3 Clusters) - UMAP Projection', fontsize=11, fontweight='bold')
+    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
+    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
     plots['kmeans_plot'] = fig_b64(fig)
     
     # Plot Hierarchical
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=hc_labels, cmap='plasma', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('Hierarchical Clustering (3 Clusters) - PCA Projection', fontsize=11, fontweight='bold')
-    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
-    ax.grid(True, alpha=0.7); plt.tight_layout()
+    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=hc_labels, cmap='plasma', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('Hierarchical Clustering (3 Clusters) - UMAP Projection', fontsize=11, fontweight='bold')
+    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
+    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
     plots['hc_plot'] = fig_b64(fig)
+
+    # Plot DBSCAN
+    fig, ax = plt.subplots(figsize=(7, 5))
+    # DBSCAN colors: noise (-1) as grey, others colors
+    colors = ['#94a3b8' if label == -1 else '#ef4444' for label in db_labels]
+    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=colors, alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('DBSCAN Clustering - UMAP Projection', fontsize=11, fontweight='bold')
+    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
+    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
+    plots['dbscan_plot'] = fig_b64(fig)
     
     metrics = {
         'n_samples': len(Xs),
@@ -616,6 +650,55 @@ def clustering_page():
     }
     
     return render_template('clustering.html', error=None, metrics=metrics, plots=plots)
+
+# ── ANOMALY DETECTION ──────────────────────────────────────────────────────────
+@app.route('/anomaly')
+def anomaly_page():
+    df = get_df()
+    if df is None:
+        return render_template('anomaly.html', error='Dataset not found.', plots={})
+    
+    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
+    
+    clean = df[list(set(FEATURES))].dropna()
+    clean = clean[clean['Total Dispatched Trips'] > 0]
+    clean = clean.sample(n=min(len(clean), 3000), random_state=42)
+    X = clean[FEATURES].values
+
+    ss = StandardScaler()
+    Xs = ss.fit_transform(X)
+    
+    # Isolation Forest
+    iso = IsolationForest(contamination=0.05, random_state=42)
+    iso_preds = iso.fit_predict(Xs)
+    
+    # -1 means anomaly, 1 means normal
+    anomalies_detected = sum(iso_preds == -1)
+    
+    # Dimensionality Reduction for plotting 2D
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(Xs)
+    
+    plots = {}
+    
+    fig, ax = plt.subplots(figsize=(7, 5))
+    colors = ['#ef4444' if p == -1 else '#3b82f6' for p in iso_preds]
+    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=colors, alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('Anomaly Detection (Red = Outliers)', fontsize=13, fontweight='bold')
+    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
+    ax.grid(True, color='#475569', linewidth=1)
+    ax.set_facecolor('#ffffff')
+    plt.tight_layout()
+    plots['anomaly_plot'] = fig_b64(fig)
+    
+    metrics = {
+        'n_samples': len(Xs),
+        'n_features': len(FEATURES),
+        'features': FEATURES,
+        'n_anomalies': int(anomalies_detected)
+    }
+    
+    return render_template('anomaly.html', error=None, metrics=metrics, plots=plots)
 
 # ── PREDICT API ────────────────────────────────────────────────────────────────
 @app.route('/predict', methods=['POST'])
@@ -640,4 +723,4 @@ if __name__ == '__main__':
     print('\n  RideRush ML Server')
     print('  Landing   : http://127.0.0.1:5000')
     print('  Dashboard : http://127.0.0.1:5000/load-data\n')
-    app.run(host='127.0.0.1', port=5000, debug=False)
+    app.run(host='127.0.0.1', port=5000, debug=True)

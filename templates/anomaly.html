@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set active = 'anomaly' %}
+{% block title %}Anomaly Detection — RideRush ML{% endblock %}
+{% block page_title %}Anomaly <span>Detection</span>{% endblock %}
+{% block page_subtitle %}Isolation Forest for Outlier Detection on FHV Data{% endblock %}
+
+{% block content %}
+{% if error %}
+  <div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="card">
+  <div class="card-title" style="border-left: 4px solid #F59E0B; padding-left: 12px;">Anomaly Detection Overview</div>
+  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
+    Isolation Forest identifies anomalies by isolating outliers in the feature space.
+    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
+    <span class="badge" style="background:#fee2e2;color:#dc2626;margin-left:8px;">Contamination: 5%</span>
+  </p>
+
+  <div class="metrics-grid" style="margin-bottom:24px;">
+    <div class="metric">
+      <div class="m-label" style="text-transform: uppercase;">Data Points</div>
+      <div class="m-value" style="font-size:22px;color:#f59e0b;font-weight:700;">{{ '{:,}'.format(metrics.n_samples) }}</div>
+      <div class="m-sub">downsampled for viz</div>
+    </div>
+    <div class="metric">
+      <div class="m-label" style="text-transform: uppercase;">Features</div>
+      <div class="m-value" style="font-size:22px;color:#f59e0b;font-weight:700;">{{ metrics.n_features }}</div>
+      <div class="m-sub">numerical variables</div>
+    </div>
+    <div class="metric">
+      <div class="m-label" style="text-transform: uppercase;">Anomalies Detected</div>
+      <div class="m-value" style="font-size:22px;color:#ef4444;font-weight:700;">{{ metrics.n_anomalies }}</div>
+      <div class="m-sub">outlier instances</div>
+    </div>
+  </div>
+  
+  <p style="font-size:12px;color:#475569;margin-bottom:12px;">
+    <strong>Features used:</strong> {{ metrics.features | join(', ') }}
+  </p>
+</div>
+
+<div class="plots-grid" style="margin-top:24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+  <!-- Isolation Forest -->
+  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">ISOLATION FOREST (PCA PROJECTION)</div>
+    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
+      Normal points are shown in blue, while identified outliers (anomalies) are shown in red.
+    </p>
+    {% if plots.anomaly_plot is defined %}
+    <img class="plot-img" src="data:image/png;base64,{{ plots.anomaly_plot }}" alt="Anomaly Detection PCA Scatter" style="width: 25%; border-radius: 4px;">
+    {% endif %}
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
