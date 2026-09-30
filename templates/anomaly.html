@@ -1,57 +1,44 @@
 {% extends 'base.html' %}
-{% set active = 'anomaly' %}
 {% block title %}Anomaly Detection — RideRush ML{% endblock %}
-{% block page_title %}Anomaly <span>Detection</span>{% endblock %}
-{% block page_subtitle %}Isolation Forest for Outlier Detection on FHV Data{% endblock %}
-
+{% block page_title %}Anomaly <span class="text-orange">Detection</span>{% endblock %}
+{% block page_subtitle %}Isolation Forest &amp; Local Outlier Factor for outlier detection in NYC FHV data{% endblock %}
 {% block content %}
 {% if error %}
-  <div class="error-box">{{ error }}</div>
+<div class="error-box">{{ error }}</div>
 {% else %}
 
+<div class="stat-row">
+  <div class="stat-chip"><div class="chip-label">Samples</div><div class="chip-value">{{ metrics.n_samples }}</div><div class="chip-sub">analyzed</div></div>
+  <div class="stat-chip"><div class="chip-label">Isolation Forest</div><div class="chip-value">{{ metrics.iso_anomalies }}</div><div class="chip-sub">anomalies</div></div>
+  <div class="stat-chip"><div class="chip-label">LOF</div><div class="chip-value">{{ metrics.lof_anomalies }}</div><div class="chip-sub">anomalies</div></div>
+  <div class="stat-chip"><div class="chip-label">Contamination</div><div class="chip-value">{{ metrics.contamination }}</div><div class="chip-sub">assumed rate</div></div>
+</div>
+
 <div class="card">
-  <div class="card-title" style="border-left: 4px solid #F59E0B; padding-left: 12px;">Anomaly Detection Overview</div>
-  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
-    Isolation Forest identifies anomalies by isolating outliers in the feature space.
-    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
-    <span class="badge" style="background:#fee2e2;color:#dc2626;margin-left:8px;">Contamination: 5%</span>
-  </p>
-
-  <div class="metrics-grid" style="margin-bottom:24px;">
-    <div class="metric">
-      <div class="m-label" style="text-transform: uppercase;">Data Points</div>
-      <div class="m-value" style="font-size:22px;color:#f59e0b;font-weight:700;">{{ '{:,}'.format(metrics.n_samples) }}</div>
-      <div class="m-sub">downsampled for viz</div>
-    </div>
-    <div class="metric">
-      <div class="m-label" style="text-transform: uppercase;">Features</div>
-      <div class="m-value" style="font-size:22px;color:#f59e0b;font-weight:700;">{{ metrics.n_features }}</div>
-      <div class="m-sub">numerical variables</div>
-    </div>
-    <div class="metric">
-      <div class="m-label" style="text-transform: uppercase;">Anomalies Detected</div>
-      <div class="m-value" style="font-size:22px;color:#ef4444;font-weight:700;">{{ metrics.n_anomalies }}</div>
-      <div class="m-sub">outlier instances</div>
-    </div>
-  </div>
-  
-  <p style="font-size:12px;color:#475569;margin-bottom:12px;">
-    <strong>Features used:</strong> {{ metrics.features | join(', ') }}
-  </p>
+  <div class="card-title">Isolation Forest vs Local Outlier Factor</div>
+  {% if plots.anomaly_comparison %}<img src="data:image/png;base64,{{ plots.anomaly_comparison }}" class="plot-img" alt="Anomaly Comparison">{% endif %}
 </div>
 
-<div class="plots-grid" style="margin-top:24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-  <!-- Isolation Forest -->
-  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">ISOLATION FOREST (PCA PROJECTION)</div>
-    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
-      Normal points are shown in blue, while identified outliers (anomalies) are shown in red.
-    </p>
-    {% if plots.anomaly_plot is defined %}
-    <img class="plot-img" src="data:image/png;base64,{{ plots.anomaly_plot }}" alt="Anomaly Detection PCA Scatter" style="width: 25%; border-radius: 4px;">
-    {% endif %}
-  </div>
+<div class="card">
+  <div class="card-title">Anomaly Score Distribution</div>
+  {% if plots.score_dist %}<img src="data:image/png;base64,{{ plots.score_dist }}" class="plot-img" alt="Score Distribution">{% endif %}
 </div>
 
+{% if plots.time_series %}
+<div class="card">
+  <div class="card-title">Time Series Anomaly View</div>
+  <img src="data:image/png;base64,{{ plots.time_series }}" class="plot-img" alt="Time Series">
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-title">About the Methods</div>
+  <p style="color:var(--text-soft);font-size:13px;line-height:1.8">
+    <strong>Isolation Forest</strong> isolates anomalies by randomly selecting a feature and a split value between the max and min of that feature.
+    Since anomalies are few and different, they require fewer splits to isolate, resulting in shorter paths in the isolation tree.<br><br>
+    <strong>Local Outlier Factor (LOF)</strong> computes the local density deviation of a data point with respect to its neighbors.
+    Points with substantially lower density than their neighbors are considered outliers. LOF is effective at detecting local anomalies in non-uniform data distributions.
+  </p>
+</div>
 {% endif %}
 {% endblock %}

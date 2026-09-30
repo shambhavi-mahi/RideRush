@@ -8,11 +8,10 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, LabelEncoder
 from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor, IsolationForest
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor
 from sklearn.tree import DecisionTreeRegressor, plot_tree
-from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+from sklearn.cluster import KMeans, AgglomerativeClustering
 from sklearn.decomposition import PCA
-import umap
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
@@ -92,6 +91,21 @@ def css():        return send_from_directory(BASE_DIR, 'style.css', mimetype='te
 def js():         return send_from_directory(BASE_DIR, 'main.js',  mimetype='application/javascript')
 @app.route('/assets/<path:fn>')
 def assets(fn):   return send_from_directory(os.path.join(BASE_DIR, 'assets'), fn)
+
+# ── LOGIN ──────────────────────────────────────────────────────────────────────
+@app.route('/login', methods=['GET', 'POST'])
+def login_page():
+    error = None
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        # Demo: accept any non-empty credentials, redirect to dashboard
+        if email and password:
+            from flask import redirect
+            return redirect('/load-data')
+        error = 'Please enter both email and password.'
+    return render_template('login.html', error=error)
+
 
 # ── LOAD DATA ──────────────────────────────────────────────────────────────────
 @app.route('/load-data')
@@ -588,59 +602,26 @@ def clustering_page():
     # 2. Hierarchical (Agglomerative)
     hc = AgglomerativeClustering(n_clusters=3)
     hc_labels = hc.fit_predict(Xs)
-
-    # 3. DBSCAN
-    dbscan = DBSCAN(eps=0.5, min_samples=5)
-    db_labels = dbscan.fit_predict(Xs)
-
-    # PCA for Scree Plot
-    pca_full = PCA()
-    pca_full.fit(Xs)
-    explained_variance = pca_full.explained_variance_ratio_ * 100
-    cumulative_variance = np.cumsum(explained_variance)
-
-    # Plot Scree
-    fig, ax = plt.subplots(figsize=(7, 5))
-    ax.bar(range(1, len(explained_variance) + 1), explained_variance, alpha=0.6, color='#60A5FA')
-    ax.plot(range(1, len(explained_variance) + 1), cumulative_variance, marker='o', color='#F59E0B')
-    ax.set_title('PCA Explained Variance (Scree Plot)', fontsize=11, fontweight='bold')
-    ax.set_xlabel('Principal Component')
-    ax.set_ylabel('Variance Explained (%)')
-    ax.set_xticks(range(1, len(explained_variance) + 1))
-    ax.grid(True, color='#475569', linewidth=1)
-    ax.set_facecolor('#ffffff')
-    plt.tight_layout()
-    plots['scree_plot'] = fig_b64(fig)
     
     # Dimensionality Reduction for plotting 2D
-    reducer = umap.UMAP(n_components=2, random_state=42)
-    X_umap = reducer.fit_transform(Xs)
+    pca = PCA(n_components=2)
+    X_pca = pca.fit_transform(Xs)
     
     # Plot KMeans
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=km_labels, cmap='viridis', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('K-Means Clustering (3 Clusters) - UMAP Projection', fontsize=11, fontweight='bold')
-    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
-    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
+    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=km_labels, cmap='viridis', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('K-Means Clustering (3 Clusters) - PCA Projection', fontsize=11, fontweight='bold')
+    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
+    ax.grid(True, alpha=0.7); plt.tight_layout()
     plots['kmeans_plot'] = fig_b64(fig)
     
     # Plot Hierarchical
     fig, ax = plt.subplots(figsize=(7, 5))
-    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=hc_labels, cmap='plasma', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('Hierarchical Clustering (3 Clusters) - UMAP Projection', fontsize=11, fontweight='bold')
-    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
-    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
+    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=hc_labels, cmap='plasma', alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
+    ax.set_title('Hierarchical Clustering (3 Clusters) - PCA Projection', fontsize=11, fontweight='bold')
+    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
+    ax.grid(True, alpha=0.7); plt.tight_layout()
     plots['hc_plot'] = fig_b64(fig)
-
-    # Plot DBSCAN
-    fig, ax = plt.subplots(figsize=(7, 5))
-    # DBSCAN colors: noise (-1) as grey, others colors
-    colors = ['#94a3b8' if label == -1 else '#ef4444' for label in db_labels]
-    ax.scatter(X_umap[:, 0], X_umap[:, 1], c=colors, alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('DBSCAN Clustering - UMAP Projection', fontsize=11, fontweight='bold')
-    ax.set_xlabel('UMAP Component 1'); ax.set_ylabel('UMAP Component 2')
-    ax.grid(True, color='#475569', linewidth=1); plt.tight_layout()
-    plots['dbscan_plot'] = fig_b64(fig)
     
     metrics = {
         'n_samples': len(Xs),
@@ -651,54 +632,266 @@ def clustering_page():
     
     return render_template('clustering.html', error=None, metrics=metrics, plots=plots)
 
+# ── DBSCAN ─────────────────────────────────────────────────────────────────────
+@app.route('/dbscan')
+def dbscan_page():
+    from sklearn.cluster import DBSCAN
+    from sklearn.metrics import silhouette_score
+    df = get_df()
+    if df is None:
+        return render_template('dbscan.html', error='Dataset not found.', plots={}, metrics={})
+    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
+    clean = df[FEATURES].dropna()
+    clean = clean[clean['Total Dispatched Trips'] > 0].sample(n=min(len(clean), 2000), random_state=42)
+    X = clean[FEATURES].values
+    Xs = StandardScaler().fit_transform(X)
+    X2 = PCA(n_components=2).fit_transform(Xs)
+    plots = {}
+    results = []
+    for eps in [0.3, 0.5, 0.8, 1.2]:
+        db = DBSCAN(eps=eps, min_samples=5)
+        labels = db.fit_predict(Xs)
+        n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+        n_noise = list(labels).count(-1)
+        try:
+            sil = round(silhouette_score(Xs, labels), 4) if n_clusters > 1 else 'N/A'
+        except Exception:
+            sil = 'N/A'
+        results.append({'eps': eps, 'clusters': n_clusters, 'noise': n_noise, 'silhouette': sil})
+    db_best = DBSCAN(eps=0.5, min_samples=5)
+    best_labels = db_best.fit_predict(Xs)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    axes[0].scatter(X2[:, 0], X2[:, 1], c=best_labels, cmap='tab10', alpha=0.7, s=15)
+    axes[0].set_title('DBSCAN Clusters (eps=0.5) - PCA 2D', fontsize=11, fontweight='bold')
+    axes[0].set_xlabel('PCA 1'); axes[0].set_ylabel('PCA 2'); axes[0].grid(True, alpha=0.5)
+    noise_mask = best_labels == -1
+    axes[1].scatter(X2[~noise_mask, 0], X2[~noise_mask, 1], c=best_labels[~noise_mask], cmap='tab10', alpha=0.7, s=15, label='Cluster')
+    axes[1].scatter(X2[noise_mask, 0], X2[noise_mask, 1], c='red', alpha=0.5, s=10, marker='x', label='Noise')
+    axes[1].set_title('DBSCAN: Core vs Noise Points', fontsize=11, fontweight='bold')
+    axes[1].set_xlabel('PCA 1'); axes[1].set_ylabel('PCA 2')
+    axes[1].legend(fontsize=8); axes[1].grid(True, alpha=0.5)
+    plt.tight_layout(); plots['dbscan_main'] = fig_b64(fig)
+    fig, ax = plt.subplots(figsize=(7, 4))
+    eps_vals = [r['eps'] for r in results]
+    ax.plot(eps_vals, [r['clusters'] for r in results], 'o-', color=ORNG, linewidth=2, label='Clusters', markersize=8)
+    ax2b = ax.twinx()
+    ax2b.plot(eps_vals, [r['noise'] for r in results], 's--', color=RED, linewidth=2, label='Noise pts', markersize=8)
+    ax.set_xlabel('eps value'); ax.set_ylabel('# Clusters', color=ORNG); ax2b.set_ylabel('# Noise Points', color=RED)
+    ax.set_title('DBSCAN: eps Sensitivity Analysis', fontsize=11, fontweight='bold'); ax.grid(True, alpha=0.5)
+    l1, lb1 = ax.get_legend_handles_labels(); l2, lb2 = ax2b.get_legend_handles_labels()
+    ax.legend(l1 + l2, lb1 + lb2, fontsize=8)
+    plt.tight_layout(); plots['eps_sensitivity'] = fig_b64(fig)
+    return render_template('dbscan.html', error=None,
+                           metrics={'n_samples': len(Xs), 'n_features': len(FEATURES), 'features': FEATURES, 'results': results},
+                           plots=plots)
+
+# ── PCA ────────────────────────────────────────────────────────────────────────
+@app.route('/pca')
+def pca_page():
+    df = get_df()
+    if df is None:
+        return render_template('pca.html', error='Dataset not found.', plots={}, metrics={})
+    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
+    clean = df[FEATURES].dropna()
+    clean = clean[clean['Total Dispatched Trips'] > 0]
+    Xs = StandardScaler().fit_transform(clean[FEATURES].values)
+    pca_full = PCA(n_components=len(FEATURES)); pca_full.fit(Xs)
+    ev_ratio = pca_full.explained_variance_ratio_; cum_ev = np.cumsum(ev_ratio)
+    plots = {}
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    axes[0].bar(range(1, len(FEATURES)+1), ev_ratio*100, color=ORNG, alpha=0.85, edgecolor='#f8fafc')
+    axes[0].plot(range(1, len(FEATURES)+1), cum_ev*100, 'o-', color=BLUE, linewidth=2, label='Cumulative')
+    axes[0].axhline(y=90, color=RED, linestyle='--', linewidth=1.5, label='90% threshold')
+    axes[0].set_xlabel('Principal Component'); axes[0].set_ylabel('Explained Variance (%)')
+    axes[0].set_title('Scree Plot - PCA Explained Variance', fontsize=11, fontweight='bold')
+    axes[0].legend(fontsize=8); axes[0].grid(True, alpha=0.5)
+    pca2 = PCA(n_components=2); X2 = pca2.fit_transform(Xs)
+    axes[1].scatter(X2[:, 0], X2[:, 1], alpha=0.4, s=8, color=BLUE)
+    for i, feat in enumerate(FEATURES):
+        label = feat.replace('Total Dispatched ', '').replace('Unique Dispatched ', '')
+        cx, cy = pca2.components_[0, i]*3, pca2.components_[1, i]*3
+        axes[1].annotate('', xy=(cx, cy), xytext=(0, 0), arrowprops=dict(arrowstyle='->', color=ORNG, lw=1.5))
+        axes[1].text(cx*1.3, cy*1.3, label, fontsize=7, color=ORNG, fontweight='bold', ha='center')
+    axes[1].set_xlabel(f'PC1 ({ev_ratio[0]*100:.1f}%)'); axes[1].set_ylabel(f'PC2 ({ev_ratio[1]*100:.1f}%)')
+    axes[1].set_title('PCA Biplot (PC1 vs PC2)', fontsize=11, fontweight='bold'); axes[1].grid(True, alpha=0.5)
+    plt.tight_layout(); plots['scree_biplot'] = fig_b64(fig)
+    fig, ax = plt.subplots(figsize=(10, 4))
+    loadings = pca_full.components_
+    short_feats = [f.replace('Total Dispatched ', 'TD ').replace('Unique Dispatched ', 'UD ') for f in FEATURES]
+    im = ax.imshow(loadings, cmap='RdYlBu', aspect='auto', vmin=-1, vmax=1)
+    ax.set_xticks(range(len(FEATURES))); ax.set_xticklabels(short_feats, rotation=20, ha='right', fontsize=9)
+    ax.set_yticks(range(len(FEATURES))); ax.set_yticklabels([f'PC{i+1}' for i in range(len(FEATURES))], fontsize=9)
+    ax.set_title('PCA Component Loadings Heatmap', fontsize=11, fontweight='bold')
+    plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    for i in range(len(FEATURES)):
+        for j in range(len(FEATURES)):
+            ax.text(j, i, f'{loadings[i,j]:.2f}', ha='center', va='center', fontsize=7)
+    plt.tight_layout(); plots['loadings_heatmap'] = fig_b64(fig)
+    return render_template('pca.html', error=None, plots=plots, metrics={
+        'n_samples': len(clean), 'n_features': len(FEATURES), 'features': FEATURES,
+        'ev_ratio': [round(v*100, 2) for v in ev_ratio],
+        'cum_ev': [round(v*100, 2) for v in cum_ev],
+        'n_components_90': int(np.argmax(cum_ev >= 0.90)) + 1
+    })
+
 # ── ANOMALY DETECTION ──────────────────────────────────────────────────────────
 @app.route('/anomaly')
 def anomaly_page():
+    from sklearn.ensemble import IsolationForest
+    from sklearn.neighbors import LocalOutlierFactor
+    from matplotlib.patches import Patch
     df = get_df()
     if df is None:
-        return render_template('anomaly.html', error='Dataset not found.', plots={})
-    
-    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
-    
-    clean = df[list(set(FEATURES))].dropna()
-    clean = clean[clean['Total Dispatched Trips'] > 0]
-    clean = clean.sample(n=min(len(clean), 3000), random_state=42)
-    X = clean[FEATURES].values
-
-    ss = StandardScaler()
-    Xs = ss.fit_transform(X)
-    
-    # Isolation Forest
-    iso = IsolationForest(contamination=0.05, random_state=42)
-    iso_preds = iso.fit_predict(Xs)
-    
-    # -1 means anomaly, 1 means normal
-    anomalies_detected = sum(iso_preds == -1)
-    
-    # Dimensionality Reduction for plotting 2D
-    pca = PCA(n_components=2)
-    X_pca = pca.fit_transform(Xs)
-    
+        return render_template('anomaly.html', error='Dataset not found.', plots={}, metrics={})
+    FEATURES = ['Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
+    clean = df[FEATURES].dropna()
+    clean = clean[clean['Total Dispatched Trips'] > 0].sample(n=min(len(clean), 2000), random_state=42)
+    Xs = StandardScaler().fit_transform(clean[FEATURES].values)
+    X2 = PCA(n_components=2).fit_transform(Xs)
     plots = {}
-    
-    fig, ax = plt.subplots(figsize=(7, 5))
-    colors = ['#ef4444' if p == -1 else '#3b82f6' for p in iso_preds]
-    ax.scatter(X_pca[:, 0], X_pca[:, 1], c=colors, alpha=0.7, s=20, edgecolor='#f8fafc', linewidth=0.3)
-    ax.set_title('Anomaly Detection (Red = Outliers)', fontsize=13, fontweight='bold')
-    ax.set_xlabel('PCA Component 1'); ax.set_ylabel('PCA Component 2')
-    ax.grid(True, color='#475569', linewidth=1)
-    ax.set_facecolor('#ffffff')
-    plt.tight_layout()
-    plots['anomaly_plot'] = fig_b64(fig)
-    
-    metrics = {
-        'n_samples': len(Xs),
-        'n_features': len(FEATURES),
-        'features': FEATURES,
-        'n_anomalies': int(anomalies_detected)
-    }
-    
-    return render_template('anomaly.html', error=None, metrics=metrics, plots=plots)
+    iso = IsolationForest(contamination=0.05, random_state=42)
+    iso_labels = iso.fit_predict(Xs); iso_scores = iso.decision_function(Xs)
+    iso_anomalies = (iso_labels == -1).sum()
+    lof = LocalOutlierFactor(n_neighbors=20, contamination=0.05)
+    lof_labels = lof.fit_predict(Xs); lof_anomalies = (lof_labels == -1).sum()
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    axes[0].scatter(X2[:, 0], X2[:, 1], c=['#EF4444' if l==-1 else '#3B82F6' for l in iso_labels], alpha=0.6, s=12)
+    axes[0].set_title(f'Isolation Forest ({iso_anomalies} anomalies)', fontsize=11, fontweight='bold')
+    axes[0].set_xlabel('PCA 1'); axes[0].set_ylabel('PCA 2')
+    axes[0].legend(handles=[Patch(color='#EF4444', label='Anomaly'), Patch(color='#3B82F6', label='Normal')], fontsize=8)
+    axes[0].grid(True, alpha=0.5)
+    axes[1].scatter(X2[:, 0], X2[:, 1], c=['#EF4444' if l==-1 else '#10B981' for l in lof_labels], alpha=0.6, s=12)
+    axes[1].set_title(f'LOF ({lof_anomalies} anomalies)', fontsize=11, fontweight='bold')
+    axes[1].set_xlabel('PCA 1'); axes[1].set_ylabel('PCA 2')
+    axes[1].legend(handles=[Patch(color='#EF4444', label='Anomaly'), Patch(color='#10B981', label='Normal')], fontsize=8)
+    axes[1].grid(True, alpha=0.5)
+    plt.tight_layout(); plots['anomaly_comparison'] = fig_b64(fig)
+    fig, ax = plt.subplots(figsize=(9, 4))
+    ax.hist(iso_scores, bins=50, color=ORNG, alpha=0.7, edgecolor='white', label='Anomaly scores')
+    ax.axvline(x=0, color=RED, linestyle='--', linewidth=2, label='Decision boundary')
+    ax.set_xlabel('Anomaly Score'); ax.set_ylabel('Count')
+    ax.set_title('Isolation Forest: Score Distribution', fontsize=11, fontweight='bold')
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.5); plt.tight_layout()
+    plots['score_dist'] = fig_b64(fig)
+    ts_cols = list(dict.fromkeys(['Year', 'Month', 'Total Dispatched Trips'] + FEATURES))
+    ts_clean = df[[c for c in ts_cols if c in df.columns]].dropna()
+    ts_clean = ts_clean[ts_clean['Total Dispatched Trips']>0].copy()
+    ts_Xs = StandardScaler().fit_transform(ts_clean[FEATURES].values)
+    ts_labels = IsolationForest(contamination=0.05, random_state=42).fit_predict(ts_Xs)
+    ts_clean['anomaly'] = ts_labels; ts_clean['idx'] = range(len(ts_clean))
+    normal = ts_clean[ts_clean['anomaly']==1]; anomal = ts_clean[ts_clean['anomaly']==-1]
+    fig, ax = plt.subplots(figsize=(12, 4))
+    ax.plot(ts_clean['idx'], ts_clean['Total Dispatched Trips'], color=BLUE, alpha=0.4, linewidth=1)
+    ax.scatter(normal['idx'], normal['Total Dispatched Trips'], color=BLUE, alpha=0.5, s=8, label='Normal')
+    ax.scatter(anomal['idx'], anomal['Total Dispatched Trips'], color=RED, alpha=0.9, s=40, zorder=5, label='Anomaly', marker='*')
+    ax.set_xlabel('Record Index'); ax.set_ylabel('Total Dispatched Trips')
+    ax.set_title('Anomaly Detection on Trip Volume', fontsize=11, fontweight='bold')
+    ax.legend(fontsize=8); ax.grid(True, alpha=0.5); plt.tight_layout()
+    plots['time_series'] = fig_b64(fig)
+    return render_template('anomaly.html', error=None, plots=plots, metrics={
+        'n_samples': len(clean), 'n_features': len(FEATURES), 'features': FEATURES,
+        'iso_anomalies': int(iso_anomalies), 'lof_anomalies': int(lof_anomalies), 'contamination': '5%'
+    })
+
+# ── T-SNE / UMAP ───────────────────────────────────────────────────────────────
+@app.route('/tsne-umap')
+def tsne_umap_page():
+    from sklearn.manifold import TSNE
+    df = get_df()
+    if df is None:
+        return render_template('tsne_umap.html', error='Dataset not found.', plots={}, metrics={})
+    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips', 'Total Dispatched Trips']
+    clean = df[FEATURES].dropna()
+    clean = clean[clean['Total Dispatched Trips'] > 0].sample(n=min(len(clean), 800), random_state=42)
+    Xs = StandardScaler().fit_transform(clean[FEATURES].values)
+    unique_years = sorted(clean['Year'].unique())
+    year_map = {y: i for i, y in enumerate(unique_years)}
+    c_arr = [year_map[y] for y in clean['Year'].values]
+    plots = {}
+    X_tsne = TSNE(n_components=2, perplexity=30, random_state=42, max_iter=1000).fit_transform(Xs)
+    pca2 = PCA(n_components=2); X_pca2 = pca2.fit_transform(Xs); ev = pca2.explained_variance_ratio_
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    sc = axes[0].scatter(X_tsne[:, 0], X_tsne[:, 1], c=c_arr, cmap='tab10', alpha=0.7, s=15)
+    axes[0].set_title('t-SNE 2D Projection (by Year)', fontsize=11, fontweight='bold')
+    axes[0].set_xlabel('t-SNE 1'); axes[0].set_ylabel('t-SNE 2')
+    plt.colorbar(sc, ax=axes[0], label='Year index'); axes[0].grid(True, alpha=0.5)
+    sc2 = axes[1].scatter(X_pca2[:, 0], X_pca2[:, 1], c=c_arr, cmap='tab10', alpha=0.7, s=15)
+    axes[1].set_title('PCA 2D Projection (by Year)', fontsize=11, fontweight='bold')
+    axes[1].set_xlabel(f'PC1 ({ev[0]*100:.1f}%)'); axes[1].set_ylabel(f'PC2 ({ev[1]*100:.1f}%)')
+    plt.colorbar(sc2, ax=axes[1], label='Year index'); axes[1].grid(True, alpha=0.5)
+    plt.tight_layout(); plots['tsne_pca'] = fig_b64(fig)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    for i, perp in enumerate([10, 30, 50]):
+        Xt = TSNE(n_components=2, perplexity=perp, random_state=42, max_iter=500).fit_transform(Xs)
+        axes[i].scatter(Xt[:, 0], Xt[:, 1], c=c_arr, cmap='tab10', alpha=0.7, s=12)
+        axes[i].set_title(f't-SNE perplexity={perp}', fontsize=10, fontweight='bold')
+        axes[i].set_xlabel('t-SNE 1'); axes[i].set_ylabel('t-SNE 2'); axes[i].grid(True, alpha=0.5)
+    plt.tight_layout(); plots['perplexity_comp'] = fig_b64(fig)
+    return render_template('tsne_umap.html', error=None, plots=plots, metrics={
+        'n_samples': len(clean), 'n_features': len(FEATURES), 'features': FEATURES,
+        'unique_years': [int(y) for y in unique_years], 'perplexity': 30
+    })
+
+# ── DATA LEAKAGE ───────────────────────────────────────────────────────────────
+@app.route('/data-leakage')
+def data_leakage_page():
+    from sklearn.linear_model import LinearRegression as LR
+    df = get_df()
+    if df is None:
+        return render_template('data_leakage.html', error='Dataset not found.', plots={}, metrics={})
+    TARGET = 'Total Dispatched Trips'
+    FEATURES = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips']
+    ALL_COLS = FEATURES + [TARGET]
+    clean = df[ALL_COLS].dropna(); clean = clean[clean[TARGET] > 0]
+    corr = clean[ALL_COLS].corr()
+    X = clean[FEATURES].values; y = clean[TARGET].values
+    plots = {}
+    fig, ax = plt.subplots(figsize=(8, 6))
+    im = ax.imshow(corr.values, cmap='RdYlBu', vmin=-1, vmax=1, aspect='auto')
+    short = [c.replace('Total Dispatched ', 'TD ').replace('Unique Dispatched ', 'UD ') for c in ALL_COLS]
+    ax.set_xticks(range(len(ALL_COLS))); ax.set_xticklabels(short, rotation=25, ha='right', fontsize=8)
+    ax.set_yticks(range(len(ALL_COLS))); ax.set_yticklabels(short, fontsize=8)
+    ax.set_title('Feature Correlation Matrix (Leakage Check)', fontsize=11, fontweight='bold')
+    plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    for i in range(len(ALL_COLS)):
+        for j in range(len(ALL_COLS)):
+            ax.text(j, i, f'{corr.values[i,j]:.2f}', ha='center', va='center', fontsize=7,
+                    color='white' if abs(corr.values[i,j]) > 0.6 else 'black')
+    plt.tight_layout(); plots['corr_heatmap'] = fig_b64(fig)
+    Xtr_r, Xte_r, ytr_r, yte_r = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=False)
+    Xtr_s, Xte_s, ytr_s, yte_s = train_test_split(X, y, test_size=0.2, random_state=42, shuffle=True)
+    split_models = {}
+    for name, (Xtr, ytr, Xte, yte) in [('Temporal Split', (Xtr_r, ytr_r, Xte_r, yte_r)),
+                                          ('Random Split',   (Xtr_s, ytr_s, Xte_s, yte_s))]:
+        m = LR().fit(Xtr, ytr); yp = m.predict(Xte)
+        split_models[name] = {'r2': round(r2_score(yte, yp), 4), 'mae': round(mean_absolute_error(yte, yp), 2)}
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    axes[0].scatter(clean['Total Dispatched Shared Trips'], clean[TARGET], alpha=0.4, s=8, color=ORNG)
+    axes[0].set_xlabel('Total Dispatched Shared Trips'); axes[0].set_ylabel(TARGET)
+    axes[0].set_title('Potential Leakage: Shared vs Total Trips', fontsize=11, fontweight='bold'); axes[0].grid(True, alpha=0.5)
+    names = list(split_models.keys()); r2s = [split_models[n]['r2'] for n in names]
+    axes[1].bar(names, r2s, color=[ORNG, BLUE], alpha=0.85, edgecolor='white', width=0.5)
+    for i, v in enumerate(r2s):
+        axes[1].text(i, v+0.005, str(v), ha='center', fontsize=10, fontweight='bold')
+    axes[1].set_ylim(0, 1.15); axes[1].set_ylabel('R² Score')
+    axes[1].set_title('Temporal vs Random Split R²', fontsize=11, fontweight='bold'); axes[1].grid(True, axis='y', alpha=0.5)
+    plt.tight_layout(); plots['leakage_analysis'] = fig_b64(fig)
+    fig, ax = plt.subplots(figsize=(8, 4))
+    feat_corr = corr[TARGET].drop(TARGET)
+    colors_fc = [RED if abs(v)>0.9 else ORNG if abs(v)>0.5 else BLUE for v in feat_corr.values]
+    ax.barh(feat_corr.index, feat_corr.values, color=colors_fc, alpha=0.85, edgecolor='white')
+    ax.axvline(x=0.9, color=RED, linestyle='--', linewidth=1.5, label='High leak threshold (>0.9)')
+    ax.axvline(x=-0.9, color=RED, linestyle='--', linewidth=1.5)
+    ax.set_xlabel('Correlation with Target')
+    ax.set_title('Feature-Target Correlation (Leakage Risk)', fontsize=11, fontweight='bold')
+    ax.legend(fontsize=8); ax.grid(True, axis='x', alpha=0.5); plt.tight_layout()
+    plots['feat_corr'] = fig_b64(fig)
+    high_risk = [f for f in FEATURES if abs(corr.loc[f, TARGET]) > 0.9]
+    return render_template('data_leakage.html', error=None, plots=plots, metrics={
+        'n_samples': len(clean), 'features': FEATURES, 'target': TARGET,
+        'corr_with_target': {f: round(corr.loc[f, TARGET], 4) for f in FEATURES},
+        'high_risk_features': high_risk, 'split_comparison': split_models
+    })
 
 # ── PREDICT API ────────────────────────────────────────────────────────────────
 @app.route('/predict', methods=['POST'])
@@ -723,4 +916,4 @@ if __name__ == '__main__':
     print('\n  RideRush ML Server')
     print('  Landing   : http://127.0.0.1:5000')
     print('  Dashboard : http://127.0.0.1:5000/load-data\n')
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=False)

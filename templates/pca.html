@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}PCA — RideRush ML{% endblock %}
+{% block page_title %}Principal Component <span class="text-orange">Analysis</span>{% endblock %}
+{% block page_subtitle %}Dimensionality reduction and variance decomposition of NYC FHV features{% endblock %}
+{% block content %}
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip"><div class="chip-label">Samples</div><div class="chip-value">{{ metrics.n_samples }}</div><div class="chip-sub">records</div></div>
+  <div class="stat-chip"><div class="chip-label">Features</div><div class="chip-value">{{ metrics.n_features }}</div><div class="chip-sub">original dims</div></div>
+  <div class="stat-chip"><div class="chip-label">PC1 Variance</div><div class="chip-value">{{ metrics.ev_ratio[0] }}%</div><div class="chip-sub">explained</div></div>
+  <div class="stat-chip"><div class="chip-label">90% Threshold</div><div class="chip-value">{{ metrics.n_components_90 }} PCs</div><div class="chip-sub">needed</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Scree Plot &amp; Biplot</div>
+  {% if plots.scree_biplot %}<img src="data:image/png;base64,{{ plots.scree_biplot }}" class="plot-img" alt="Scree Biplot">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Component Loadings Heatmap</div>
+  {% if plots.loadings_heatmap %}<img src="data:image/png;base64,{{ plots.loadings_heatmap }}" class="plot-img" alt="Loadings">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Explained Variance Per Component</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Explained Variance (%)</th><th>Cumulative (%)</th></tr></thead>
+      <tbody>
+      {% for i in range(metrics.n_features) %}
+      <tr>
+        <td><strong>PC{{ i + 1 }}</strong></td>
+        <td class="td-orange">{{ metrics.ev_ratio[i] }}%</td>
+        <td class="td-blue">{{ metrics.cum_ev[i] }}%</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

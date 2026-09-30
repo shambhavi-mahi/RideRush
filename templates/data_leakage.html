@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Data Leakage — RideRush ML{% endblock %}
+{% block page_title %}Data <span class="text-orange">Leakage</span> Analysis{% endblock %}
+{% block page_subtitle %}Detecting and mitigating data leakage risks in the NYC FHV prediction pipeline{% endblock %}
+{% block content %}
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip"><div class="chip-label">Samples</div><div class="chip-value">{{ metrics.n_samples }}</div><div class="chip-sub">records</div></div>
+  <div class="stat-chip"><div class="chip-label">High-Risk Features</div><div class="chip-value">{{ metrics.high_risk_features|length }}</div><div class="chip-sub">potential leaks</div></div>
+  <div class="stat-chip"><div class="chip-label">Temporal R²</div><div class="chip-value">{{ metrics.split_comparison['Temporal Split'].r2 }}</div><div class="chip-sub">no-shuffle</div></div>
+  <div class="stat-chip"><div class="chip-label">Random R²</div><div class="chip-value">{{ metrics.split_comparison['Random Split'].r2 }}</div><div class="chip-sub">shuffled</div></div>
+</div>
+
+{% if metrics.high_risk_features %}
+<div class="card" style="border-left:4px solid #EF4444">
+  <div class="card-title" style="color:#EF4444">⚠ High Leakage Risk Detected</div>
+  <p style="color:#b91c1c;font-size:13px;line-height:1.7">
+    Features with correlation &gt; 0.9 with target:
+    {% for f in metrics.high_risk_features %}<strong>{{ f }}</strong>{% if not loop.last %}, {% endif %}{% endfor %}.
+    These features may cause unrealistically high model accuracy during training. Consider removing them from the feature set.
+  </p>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-title">Leakage Analysis Plots</div>
+  {% if plots.leakage_analysis %}<img src="data:image/png;base64,{{ plots.leakage_analysis }}" class="plot-img" alt="Leakage Analysis">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Correlation Heatmap</div>
+  {% if plots.corr_heatmap %}<img src="data:image/png;base64,{{ plots.corr_heatmap }}" class="plot-img" alt="Correlation Heatmap">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Feature-Target Correlation (Leakage Risk)</div>
+  {% if plots.feat_corr %}<img src="data:image/png;base64,{{ plots.feat_corr }}" class="plot-img" alt="Feature Correlation">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Feature Correlations with Target</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Feature</th><th>Correlation with Target</th><th>Risk Level</th></tr></thead>
+      <tbody>
+      {% for feat, corr_val in metrics.corr_with_target.items() %}
+      <tr>
+        <td>{{ feat }}</td>
+        <td class="td-num">{{ corr_val }}</td>
+        <td>
+          {% if corr_val > 0.9 or corr_val < -0.9 %}
+            <span class="badge badge-red">HIGH</span>
+          {% elif corr_val > 0.5 or corr_val < -0.5 %}
+            <span class="badge badge-orange">MEDIUM</span>
+          {% else %}
+            <span class="badge badge-green">LOW</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

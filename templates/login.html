@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — RideRush</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f0f4ff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; }
+    .login-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 1060px;
+      min-height: 620px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 32px 80px rgba(15,23,42,0.18);
+      margin: 24px;
+    }
+
+    /* ===== LEFT PANEL ===== */
+    .login-left {
+      flex: 1;
+      background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 55%, #0f172a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-left::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -80px;
+      width: 340px; height: 340px;
+      background: radial-gradient(circle, rgba(245,158,11,0.22) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .login-left::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -60px;
+      width: 280px; height: 280px;
+      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 44px;
+      z-index: 1;
+      align-self: flex-start;
+    }
+    .login-brand-icon {
+      width: 42px; height: 42px;
+      background: #F59E0B;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(245,158,11,0.4);
+    }
+    .login-brand-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+    .login-illustration {
+      z-index: 1;
+      width: 100%;
+      max-width: 360px;
+      drop-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .login-tagline {
+      z-index: 1;
+      margin-top: 36px;
+      text-align: center;
+    }
+    .login-tagline h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+    .login-tagline h2 span { color: #F59E0B; }
+    .login-tagline p {
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.65;
+    }
+    .left-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 24px;
+      z-index: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .left-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 500;
+    }
+
+    /* ===== RIGHT PANEL ===== */
+    .login-right {
+      width: 420px;
+      flex-shrink: 0;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 56px 48px;
+    }
+    .login-right h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .login-right .subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 7px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .form-group input:focus {
+      border-color: #F59E0B;
+      box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+      background: #ffffff;
+    }
+    .form-group input::placeholder { color: #94a3b8; }
+    .form-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -12px;
+      margin-bottom: 28px;
+    }
+    .forgot-link {
+      font-size: 12.5px;
+      color: #F59E0B;
+      font-weight: 600;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Sora', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .btn-login:hover {
+      background: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15,23,42,0.2);
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: #e2e8f0;
+    }
+    .btn-guest {
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: #0f172a;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    }
+    .btn-guest:hover {
+      border-color: #F59E0B;
+      background: rgba(245,158,11,0.04);
+      transform: translateY(-1px);
+    }
+    .register-prompt {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .register-prompt a { color: #F59E0B; font-weight: 600; }
+    .register-prompt a:hover { text-decoration: underline; }
+    .error-alert {
+      background: rgba(239,68,68,0.07);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      color: #b91c1c;
+      font-size: 13px;
+    }
+    @media (max-width: 768px) {
+      .login-left { display: none; }
+      .login-right { width: 100%; border-radius: 28px; padding: 40px 28px; }
+      .login-wrapper { border-radius: 28px; margin: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-wrapper">
+
+    <!-- LEFT: Illustration Panel -->
+    <div class="login-left">
+      <div class="login-brand">
+        <div class="login-brand-icon">
+          <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
+            <path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/>
+          </svg>
+        </div>
+        <span class="login-brand-name">RideRush</span>
+      </div>
+
+      <!-- SVG Illustration -->
+      <svg class="login-illustration" viewBox="0 0 360 270" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky -->
+        <rect width="360" height="270" rx="20" fill="url(#skyG)"/>
+        <defs>
+          <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0a1628"/>
+            <stop offset="100%" stop-color="#1a3050"/>
+          </linearGradient>
+        </defs>
+        <!-- Stars -->
+        <circle cx="40" cy="25" r="1.5" fill="white" opacity="0.6"/>
+        <circle cx="110" cy="18" r="1" fill="white" opacity="0.5"/>
+        <circle cx="200" cy="12" r="1.5" fill="white" opacity="0.7"/>
+        <circle cx="290" cy="28" r="1" fill="white" opacity="0.5"/>
+        <circle cx="330" cy="15" r="1.5" fill="white" opacity="0.6"/>
+        <circle cx="165" cy="35" r="1" fill="white" opacity="0.4"/>
+        <circle cx="75" cy="45" r="1" fill="white" opacity="0.3"/>
+        <circle cx="250" cy="40" r="1.2" fill="white" opacity="0.5"/>
+        <!-- City skyline -->
+        <path d="M0 185 L0 150 L18 150 L18 130 L28 130 L28 118 L38 118 L38 135 L50 135 L50 105 L60 105 L60 95 L72 95 L72 138 L82 138 L82 118 L92 118 L92 100 L102 100 L102 185Z" fill="#071120" opacity="0.9"/>
+        <path d="M100 185 L100 125 L115 125 L115 110 L125 110 L125 98 L138 98 L138 88 L148 88 L148 108 L158 108 L158 120 L168 120 L168 104 L178 104 L178 94 L188 94 L188 185Z" fill="#071120"/>
+        <path d="M186 185 L186 128 L200 128 L200 112 L212 112 L212 102 L222 102 L222 88 L232 88 L232 76 L238 76 L238 82 L244 82 L244 100 L254 100 L254 118 L265 118 L265 130 L275 130 L275 118 L285 118 L285 185Z" fill="#071120" opacity="0.9"/>
+        <path d="M283 185 L283 138 L295 138 L295 125 L305 125 L305 140 L316 140 L316 132 L326 132 L326 142 L340 142 L340 155 L360 155 L360 185Z" fill="#071120" opacity="0.85"/>
+        <!-- Building windows lit up -->
+        <rect x="53" y="108" width="5" height="4" rx="1" fill="#F59E0B" opacity="0.8"/>
+        <rect x="63" y="100" width="5" height="4" rx="1" fill="#F59E0B" opacity="0.6"/>
+        <rect x="141" y="92" width="4" height="4" rx="1" fill="#F59E0B" opacity="0.7"/>
+        <rect x="151" y="112" width="4" height="4" rx="1" fill="white" opacity="0.4"/>
+        <rect x="205" y="115" width="5" height="4" rx="1" fill="#F59E0B" opacity="0.7"/>
+        <rect x="225" y="92" width="4" height="4" rx="1" fill="white" opacity="0.5"/>
+        <rect x="235" y="80" width="4" height="4" rx="1" fill="#F59E0B" opacity="0.9"/>
+        <!-- Ground / road -->
+        <rect x="0" y="183" width="360" height="87" fill="#060e1d"/>
+        <rect x="0" y="183" width="360" height="4" fill="#F59E0B" opacity="0.25"/>
+        <!-- Road surface -->
+        <rect x="0" y="200" width="360" height="70" fill="#0d1b2e"/>
+        <!-- Road center dashes -->
+        <rect x="20" y="232" width="44" height="5" rx="2.5" fill="#F59E0B" opacity="0.45"/>
+        <rect x="90" y="232" width="44" height="5" rx="2.5" fill="#F59E0B" opacity="0.45"/>
+        <rect x="160" y="232" width="44" height="5" rx="2.5" fill="#F59E0B" opacity="0.45"/>
+        <rect x="230" y="232" width="44" height="5" rx="2.5" fill="#F59E0B" opacity="0.45"/>
+        <rect x="300" y="232" width="44" height="5" rx="2.5" fill="#F59E0B" opacity="0.45"/>
+
+        <!-- NYC Yellow Taxi -->
+        <g transform="translate(60, 188)">
+          <rect x="0" y="22" width="100" height="38" rx="9" fill="#F59E0B"/>
+          <rect x="14" y="8" width="68" height="30" rx="8" fill="#F59E0B"/>
+          <rect x="18" y="11" width="25" height="18" rx="4" fill="#0f172a" opacity="0.82"/>
+          <rect x="50" y="11" width="25" height="18" rx="4" fill="#0f172a" opacity="0.82"/>
+          <rect x="19" y="12" width="9" height="5" rx="2" fill="white" opacity="0.25"/>
+          <rect x="51" y="12" width="9" height="5" rx="2" fill="white" opacity="0.25"/>
+          <!-- Top sign -->
+          <rect x="36" y="1" width="28" height="11" rx="4" fill="white"/>
+          <rect x="38" y="3" width="24" height="7" rx="3" fill="#0f172a"/>
+          <text x="41" y="9" font-size="4.5" fill="#F59E0B" font-family="Arial" font-weight="bold">TAXI</text>
+          <!-- Wheels -->
+          <circle cx="20" cy="60" r="10" fill="#1a2540"/>
+          <circle cx="20" cy="60" r="6" fill="#2d3f5e"/>
+          <circle cx="20" cy="60" r="2.5" fill="#94a3b8"/>
+          <circle cx="80" cy="60" r="10" fill="#1a2540"/>
+          <circle cx="80" cy="60" r="6" fill="#2d3f5e"/>
+          <circle cx="80" cy="60" r="2.5" fill="#94a3b8"/>
+          <!-- Headlights -->
+          <rect x="98" y="32" width="5" height="10" rx="2" fill="#fef9c3"/>
+          <ellipse cx="103" cy="37" rx="6" ry="4" fill="#fef9c3" opacity="0.25"/>
+          <!-- Tail lights -->
+          <rect x="-3" y="32" width="5" height="10" rx="2" fill="#ef4444" opacity="0.9"/>
+        </g>
+
+        <!-- Floating analytics card 1 -->
+        <g transform="translate(216, 48)">
+          <rect width="118" height="72" rx="12" fill="white" opacity="0.96"/>
+          <rect x="8" y="8" width="50" height="8" rx="4" fill="#f1f5f9"/>
+          <rect x="8" y="8" width="50" height="8" rx="4" fill="#F59E0B" opacity="0.25"/>
+          <text x="10" y="16" font-size="6.5" fill="#0f172a" font-family="Arial" font-weight="bold">Trip Analytics</text>
+          <text x="10" y="30" font-size="14" fill="#F59E0B" font-family="Arial" font-weight="bold">42,667</text>
+          <text x="10" y="40" font-size="6" fill="#64748b" font-family="Arial">Monthly Trips</text>
+          <rect x="10" y="48" width="10" height="14" rx="2" fill="#F59E0B" opacity="0.7"/>
+          <rect x="24" y="42" width="10" height="20" rx="2" fill="#F59E0B" opacity="0.9"/>
+          <rect x="38" y="50" width="10" height="12" rx="2" fill="#3B82F6" opacity="0.7"/>
+          <rect x="52" y="38" width="10" height="24" rx="2" fill="#F59E0B"/>
+          <rect x="66" y="44" width="10" height="18" rx="2" fill="#3B82F6" opacity="0.7"/>
+          <rect x="80" y="40" width="10" height="22" rx="2" fill="#10B981" opacity="0.8"/>
+          <rect x="94" y="46" width="10" height="16" rx="2" fill="#F59E0B" opacity="0.7"/>
+        </g>
+
+        <!-- Floating analytics card 2 -->
+        <g transform="translate(10, 42)">
+          <rect width="105" height="68" rx="12" fill="white" opacity="0.92"/>
+          <text x="10" y="20" font-size="6.5" fill="#0f172a" font-family="Arial" font-weight="bold">Revenue Trend</text>
+          <polyline points="10,58 24,46 38,52 52,34 66,40 80,26 93,34" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="10,60 24,48 38,54 52,36 66,42 80,28 93,36 93,65 10,65" stroke="none" fill="#F59E0B" opacity="0.08"/>
+          <circle cx="80" cy="26" r="3.5" fill="#F59E0B" stroke="white" stroke-width="1.5"/>
+          <text x="65" y="22" font-size="6" fill="#0f172a" font-family="Arial" font-weight="bold">$75.83M</text>
+        </g>
+
+        <!-- Data particles -->
+        <circle cx="178" cy="62" r="3.5" fill="#F59E0B" opacity="0.7"/>
+        <circle cx="195" cy="48" r="2.5" fill="#3B82F6" opacity="0.6"/>
+        <circle cx="160" cy="78" r="3" fill="#10B981" opacity="0.65"/>
+        <circle cx="205" cy="74" r="2" fill="#F59E0B" opacity="0.5"/>
+        <circle cx="148" cy="55" r="2" fill="#8B5CF6" opacity="0.55"/>
+        <circle cx="185" cy="90" r="1.5" fill="#3B82F6" opacity="0.4"/>
+        <!-- Connection lines -->
+        <line x1="178" y1="62" x2="195" y2="48" stroke="#F59E0B" stroke-width="0.8" opacity="0.35"/>
+        <line x1="195" y1="48" x2="205" y2="74" stroke="#3B82F6" stroke-width="0.8" opacity="0.3"/>
+        <line x1="160" y1="78" x2="178" y2="62" stroke="#10B981" stroke-width="0.8" opacity="0.35"/>
+        <line x1="148" y1="55" x2="160" y2="78" stroke="#8B5CF6" stroke-width="0.8" opacity="0.3"/>
+      </svg>
+
+      <div class="login-tagline">
+        <h2>NYC FHV <span>Intelligence</span><br>Platform</h2>
+        <p>AI-powered analytics &amp; ML predictions for<br>for-hire vehicle dispatch optimization.</p>
+      </div>
+      <div class="left-pills">
+        <div class="left-pill">DBSCAN</div>
+        <div class="left-pill">PCA</div>
+        <div class="left-pill">Anomaly Detection</div>
+        <div class="left-pill">t-SNE</div>
+        <div class="left-pill">GBM Predictions</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Login Form -->
+    <div class="login-right">
+      <h1>Welcome back 👋</h1>
+      <p class="subtitle">Sign in to access the RideRush ML dashboard</p>
+
+      {% if error %}
+      <div class="error-alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="/login">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div class="form-footer">
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn-login">Sign In →</button>
+      </form>
+
+      <div class="divider">or continue without account</div>
+
+      <a href="/load-data">
+        <button class="btn-guest">🚀 Go to Dashboard</button>
+      </a>
+
+      <p class="register-prompt">
+        Don't have an account? <a href="#">Request access</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>

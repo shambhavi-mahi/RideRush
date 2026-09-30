@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}DBSCAN Clustering — RideRush ML{% endblock %}
+{% block page_title %}DBSCAN <span class="text-orange">Clustering</span>{% endblock %}
+{% block page_subtitle %}Density-Based Spatial Clustering of Applications with Noise on NYC FHV data{% endblock %}
+{% block content %}
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip"><div class="chip-label">Samples</div><div class="chip-value">{{ metrics.n_samples }}</div><div class="chip-sub">records analyzed</div></div>
+  <div class="stat-chip"><div class="chip-label">Features</div><div class="chip-value">{{ metrics.n_features }}</div><div class="chip-sub">dimensions</div></div>
+  <div class="stat-chip"><div class="chip-label">Best eps</div><div class="chip-value">0.5</div><div class="chip-sub">optimal value</div></div>
+  <div class="stat-chip"><div class="chip-label">Clusters</div><div class="chip-value">{{ metrics.results[1].clusters }}</div><div class="chip-sub">at eps=0.5</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">DBSCAN Clustering Visualization</div>
+  {% if plots.dbscan_main %}<img src="data:image/png;base64,{{ plots.dbscan_main }}" class="plot-img" alt="DBSCAN">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">eps Sensitivity Analysis</div>
+  {% if plots.eps_sensitivity %}<img src="data:image/png;base64,{{ plots.eps_sensitivity }}" class="plot-img" alt="eps Sensitivity">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Parameter Sweep Results</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>eps</th><th>Clusters Found</th><th>Noise Points</th><th>Silhouette Score</th></tr></thead>
+      <tbody>
+      {% for r in metrics.results %}
+      <tr>
+        <td class="td-num">{{ r.eps }}</td>
+        <td class="td-orange">{{ r.clusters }}</td>
+        <td class="td-red">{{ r.noise }}</td>
+        <td class="td-blue">{{ r.silhouette }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">How DBSCAN Works</div>
+  <p style="color:var(--text-soft);font-size:13px;line-height:1.8">
+    DBSCAN groups points that are closely packed together (points with many nearby neighbors), marking as outliers points that lie alone in low-density regions.
+    It requires two parameters: <strong>eps</strong> (the maximum distance between two samples for one to be considered as in the neighborhood of the other)
+    and <strong>min_samples</strong> (the minimum number of points to form a dense region).
+    Unlike K-Means, DBSCAN does not require specifying the number of clusters beforehand and can find arbitrarily shaped clusters.
+  </p>
+</div>
+{% endif %}
+{% endblock %}

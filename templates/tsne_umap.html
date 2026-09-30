@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}t-SNE / UMAP — RideRush ML{% endblock %}
+{% block page_title %}t-SNE <span class="text-orange">Visualization</span>{% endblock %}
+{% block page_subtitle %}Non-linear dimensionality reduction to reveal hidden structure in the NYC FHV dataset{% endblock %}
+{% block content %}
+{% if error %}
+<div class="error-box">{{ error }}</div>
+{% else %}
+
+<div class="stat-row">
+  <div class="stat-chip"><div class="chip-label">Samples</div><div class="chip-value">{{ metrics.n_samples }}</div><div class="chip-sub">projected</div></div>
+  <div class="stat-chip"><div class="chip-label">Features</div><div class="chip-value">{{ metrics.n_features }}</div><div class="chip-sub">input dims</div></div>
+  <div class="stat-chip"><div class="chip-label">Perplexity</div><div class="chip-value">{{ metrics.perplexity }}</div><div class="chip-sub">default</div></div>
+  <div class="stat-chip"><div class="chip-label">Year Groups</div><div class="chip-value">{{ metrics.unique_years|length }}</div><div class="chip-sub">color coded</div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">t-SNE vs PCA 2D Projection</div>
+  {% if plots.tsne_pca %}<img src="data:image/png;base64,{{ plots.tsne_pca }}" class="plot-img" alt="t-SNE vs PCA">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">Perplexity Sensitivity Analysis (10 / 30 / 50)</div>
+  {% if plots.perplexity_comp %}<img src="data:image/png;base64,{{ plots.perplexity_comp }}" class="plot-img" alt="Perplexity Comparison">{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-title">About t-SNE</div>
+  <p style="color:var(--text-soft);font-size:13px;line-height:1.8">
+    <strong>t-SNE</strong> (t-distributed Stochastic Neighbor Embedding) is a non-linear dimensionality reduction technique well-suited for visualizing high-dimensional data in 2D or 3D.
+    It models each high-dimensional object by a two-dimensional point such that similar objects are modeled by nearby points and dissimilar objects are modeled by distant points with high probability.
+    <br><br>
+    <strong>Perplexity</strong> controls the balance between local and global structure. Low perplexity (5–10) focuses on local neighborhood structure.
+    High perplexity (30–50) captures more global structure. The optimal value typically lies between 5 and 50.
+    <br><br>
+    <em>Note: t-SNE is non-deterministic. For performance, the dataset is subsampled to 800 records for this visualization.</em>
+  </p>
+</div>
+{% endif %}
+{% endblock %}

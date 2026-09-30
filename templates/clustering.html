@@ -10,11 +10,11 @@
 {% else %}
 
 <div class="card">
-  <div class="card-title" style="border-left: 4px solid #F59E0B; padding-left: 12px;">Clustering Overview</div>
+  <div class="card-title">Clustering Overview</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
     Clustering is applied to discovering inherent groupings in the data without predefined labels.
     <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
-    <span class="badge badge-purple" style="margin-left:8px;">UMAP & PCA used for visualization</span>
+    <span class="badge badge-purple" style="margin-left:8px;">PCA used for 2D visualization</span>
   </p>
 
   <div class="metrics-grid" style="margin-bottom:24px;">
@@ -41,48 +41,26 @@
 
 </div>
 
-<div class="plots-grid" style="margin-top:24px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-  <!-- PCA Scree Plot -->
-  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">PCA EXPLAINED VARIANCE</div>
-    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
-      Scree plot showing the variance captured by each principal component.
-    </p>
-    {% if plots.scree_plot is defined %}
-    <img class="plot-img" src="data:image/png;base64,{{ plots.scree_plot }}" alt="PCA Explained Variance (Scree Plot)" style="width: 100%; border-radius: 4px;">
-    {% endif %}
-  </div>
-
+<div class="plots-grid" style="margin-top:24px;">
   <!-- K-Means -->
-  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">K-MEANS CLUSTERING</div>
-    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
+  <div class="plot-card">
+    <h3 class="plot-card-title">K-Means Clustering</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:12px;">
       Partitions data into k distinct clusters by minimizing variance within each cluster.
     </p>
     {% if plots.kmeans_plot is defined %}
-    <img class="plot-img" src="data:image/png;base64,{{ plots.kmeans_plot }}" alt="K-Means UMAP Scatter" style="width: 100%; border-radius: 4px;">
+    <img class="plot-img" src="data:image/png;base64,{{ plots.kmeans_plot }}" alt="K-Means PCA Scatter">
     {% endif %}
   </div>
 
   <!-- Hierarchical -->
-  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">HIERARCHICAL (AGGLOMERATIVE)</div>
-    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
+  <div class="plot-card">
+    <h3 class="plot-card-title">Hierarchical (Agglomerative)</h3>
+    <p style="font-size:12px;color:#475569;margin-bottom:12px;">
       Builds a hierarchy of clusters by repeatedly merging the two closest clusters.
     </p>
     {% if plots.hc_plot is defined %}
-    <img class="plot-img" src="data:image/png;base64,{{ plots.hc_plot }}" alt="Hierarchical UMAP Scatter" style="width: 100%; border-radius: 4px;">
-    {% endif %}
-  </div>
-
-  <!-- DBSCAN -->
-  <div class="plot-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
-    <div style="text-transform: uppercase; font-size: 10px; color: #64748b; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;">DBSCAN CLUSTERING</div>
-    <p style="font-size:11px;color:#475569;margin-bottom:12px;">
-      Density-based spatial clustering of applications with noise. Finds arbitrarily shaped clusters.
-    </p>
-    {% if plots.dbscan_plot is defined %}
-    <img class="plot-img" src="data:image/png;base64,{{ plots.dbscan_plot }}" alt="DBSCAN UMAP Scatter" style="width: 100%; border-radius: 4px;">
+    <img class="plot-img" src="data:image/png;base64,{{ plots.hc_plot }}" alt="Hierarchical PCA Scatter">
     {% endif %}
   </div>
 </div>
