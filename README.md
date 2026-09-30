@@ -11,6 +11,19 @@ Transitioning from a static frontend to a highly modular **Flask** backend, this
 
 ---
 
+
+## 📸 Screenshots
+
+### Model Evaluation Dashboard
+*(Featuring Color-coded metrics, Jump-links, MathJax formulas, and Heatmap Confusion Matrices)*
+<img src="assets/screenshots/evaluation_dashboard.png" width="800">
+
+### Authentication & Login Portal
+*(Featuring Full-screen split layout and AI-generated NYC data illustrations)*
+<img src="assets/screenshots/login_page.png" width="800">
+
+---
+
 ## 🚀 Key Features
 
 ### 1. Landing & Authentication
