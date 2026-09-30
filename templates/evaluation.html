@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% set active = 'evaluation' %}
+
+{% block content %}
+<div class="content-header">
+  <div>
+    <h1>Model Evaluation & Metrics</h1>
+    <p>Scikit-Learn implementation of Regression and Classification metrics.</p>
+  </div>
+</div>
+
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% else %}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+
+  <!-- REGRESSION METRICS -->
+  <div class="card" style="padding: 24px;">
+    <h2 style="font-size:18px; margin-bottom: 16px; display:flex; align-items:center; gap:8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      Regression Metrics
+    </h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Mean Absolute Error (MAE)</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.mae }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Mean Squared Error (MSE)</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.mse }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Root Mean Squared (RMSE)</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.rmse }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">R-Squared (R^2)</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.r2 }}</div>
+      </div>
+    </div>
+    
+    <div style="font-size:14px; font-weight:600; margin-bottom:8px;">Scikit-Learn Implementation</div>
+    <pre style="background:#0f172a; color:#f8fafc; padding:16px; border-radius:12px; font-size:13px; overflow-x:auto;"><code>from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import numpy as np
+
+mae = mean_absolute_error(y_true, y_pred)
+mse = mean_squared_error(y_true, y_pred)
+rmse = np.sqrt(mse)
+r2 = r2_score(y_true, y_pred)</code></pre>
+  </div>
+
+  <!-- CLASSIFICATION METRICS -->
+  <div class="card" style="padding: 24px;">
+    <h2 style="font-size:18px; margin-bottom: 16px; display:flex; align-items:center; gap:8px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      Classification Metrics
+    </h2>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Accuracy</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.accuracy }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Precision</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.precision }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Recall</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.recall }}</div>
+      </div>
+      <div style="background:#f8fafc; padding:16px; border-radius:12px;">
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">F1 Score</div>
+        <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.f1 }}</div>
+      </div>
+    </div>
+
+    <div style="font-size:14px; font-weight:600; margin-bottom:8px;">Scikit-Learn Implementation</div>
+    <pre style="background:#0f172a; color:#f8fafc; padding:16px; border-radius:12px; font-size:13px; overflow-x:auto;"><code>from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+acc = accuracy_score(y_true, y_pred)
+prec = precision_score(y_true, y_pred)
+rec = recall_score(y_true, y_pred)
+f1 = f1_score(y_true, y_pred)</code></pre>
+  </div>
+
+</div>
+{% endif %}
+{% endblock %}
