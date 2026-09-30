@@ -1,4 +1,7 @@
-{% extends 'base.html' %}
+import re
+
+# --- Update templates/evaluation.html ---
+html_content = """{% extends 'base.html' %}
 {% set active = 'evaluation' %}
 
 {% block content %}
@@ -126,3 +129,9 @@ cm = confusion_matrix(y_true, y_pred)</code></pre>
 </div>
 {% endif %}
 {% endblock %}
+"""
+
+with open('templates/evaluation.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print('Updated evaluation page with formulas and confusion matrix.')

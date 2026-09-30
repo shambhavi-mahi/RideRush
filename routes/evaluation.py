@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import (
     mean_absolute_error, mean_squared_error, r2_score,
-    accuracy_score, precision_score, recall_score, f1_score
+    accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 )
 
 evaluation_bp = Blueprint('evaluation_bp', __name__)
@@ -56,7 +56,8 @@ def evaluation_page():
         'accuracy': round(accuracy_score(yte_c, yp_c), 4),
         'precision': round(precision_score(yte_c, yp_c), 4),
         'recall': round(recall_score(yte_c, yp_c), 4),
-        'f1': round(f1_score(yte_c, yp_c), 4)
+        'f1': round(f1_score(yte_c, yp_c), 4),
+        'cm': confusion_matrix(yte_c, yp_c).tolist()
     }
 
     return render_template('evaluation.html', error=None, reg=reg_metrics, clf=clf_metrics)

@@ -1,4 +1,30 @@
-{% extends 'base.html' %}
+import re
+
+# --- Update routes/evaluation.py ---
+with open('routes/evaluation.py', 'r', encoding='utf-8') as f:
+    py_code = f.read()
+
+if 'confusion_matrix' not in py_code:
+    py_code = py_code.replace('recall_score, f1_score', 'recall_score, f1_score, confusion_matrix')
+
+py_code = py_code.replace('''    clf_metrics = {
+        'accuracy': round(accuracy_score(yte_c, yp_c), 4),
+        'precision': round(precision_score(yte_c, yp_c), 4),
+        'recall': round(recall_score(yte_c, yp_c), 4),
+        'f1': round(f1_score(yte_c, yp_c), 4)
+    }''', '''    clf_metrics = {
+        'accuracy': round(accuracy_score(yte_c, yp_c), 4),
+        'precision': round(precision_score(yte_c, yp_c), 4),
+        'recall': round(recall_score(yte_c, yp_c), 4),
+        'f1': round(f1_score(yte_c, yp_c), 4),
+        'cm': confusion_matrix(yte_c, yp_c).tolist()
+    }''')
+
+with open('routes/evaluation.py', 'w', encoding='utf-8') as f:
+    f.write(py_code)
+
+# --- Update templates/evaluation.html ---
+html_content = '''{% extends 'base.html' %}
 {% set active = 'evaluation' %}
 
 {% block content %}
@@ -28,22 +54,22 @@
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Mean Absolute Error (MAE)</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.mae }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i| $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\text{MAE} = \\frac{1}{n}\\sum_{i=1}^{n}|y_i - \\hat{y}_i| </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Mean Squared Error (MSE)</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.mse }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2 $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\text{MSE} = \\frac{1}{n}\\sum_{i=1}^{n}(y_i - \\hat{y}_i)^2 </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Root Mean Squared (RMSE)</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.rmse }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \text{RMSE} = \sqrt{\text{MSE}} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\text{RMSE} = \\sqrt{\\text{MSE}} </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
-        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">R-Squared (R&sup2;)</div>
+        <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">R-Squared (R^2)</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ reg.r2 }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ R^2 = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> R^2 = 1 - \\frac{\\sum(y_i - \\hat{y}_i)^2}{\\sum(y_i - \\bar{y})^2} </div>
       </div>
     </div>
     
@@ -67,22 +93,22 @@ r2 = r2_score(y_true, y_pred)</code></pre>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Accuracy</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.accuracy }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \frac{TP + TN}{TP + TN + FP + FN} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\frac{TP + TN}{TP + TN + FP + FN} </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Precision</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.precision }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \frac{TP}{TP + FP} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\frac{TP}{TP + FP} </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">Recall</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.recall }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ \frac{TP}{TP + FN} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> \\frac{TP}{TP + FN} </div>
       </div>
       <div style="background:#f8fafc; padding:16px; border-radius:12px;">
         <div style="font-size:12px; color:#64748b; font-weight:600; text-transform:uppercase;">F1 Score</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a; margin-top:4px;">{{ clf.f1 }}</div>
-        <div style="font-size:11px; margin-top:8px; color:#475569;">$$ 2 \times \frac{\text{Prec} \times \text{Rec}}{\text{Prec} + \text{Rec}} $$</div>
+        <div style="font-size:11px; margin-top:8px; color:#475569;"> 2 \\times \\frac{\\text{Prec} \\times \\text{Rec}}{\\text{Prec} + \\text{Rec}} </div>
       </div>
     </div>
 
@@ -126,3 +152,9 @@ cm = confusion_matrix(y_true, y_pred)</code></pre>
 </div>
 {% endif %}
 {% endblock %}
+'''
+
+with open('templates/evaluation.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print('Updated evaluation page with formulas and confusion matrix.')
