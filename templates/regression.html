@@ -10,7 +10,40 @@
 {% else %}
 
 <!-- ── SIMPLE LINEAR REGRESSION ── -->
-<div class="card">
+
+<style>
+  .jump-menu { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .btn-jump {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+  }
+  .btn-jump:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    color: #0f172a;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+  /* Offset for sticky header so anchor links don't hide under navbar */
+  html { scroll-behavior: smooth; }
+  .card { scroll-margin-top: 24px; }
+</style>
+<div class="jump-menu">
+  <a href="#slr" class="btn-jump">Simple Linear</a>
+  <a href="#mlr" class="btn-jump">Multiple Linear</a>
+  <a href="#ridge" class="btn-jump">Ridge</a>
+  <a href="#logr" class="btn-jump">Logistic</a>
+</div>
+<div class="card" id="slr">
   <div class="card-title">Simple Linear Regression (SLR)</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
     Predicts <strong style="color:#F59E0B;">{{ slr.target }}</strong>
@@ -68,7 +101,7 @@
 </div>
 
 <!-- ── MULTIPLE LINEAR REGRESSION ── -->
-<div class="card">
+<div class="card" id="mlr">
   <div class="card-title">Multiple Linear Regression (MLR)</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
     Predicts <strong style="color:#F59E0B;">{{ mlr.target }}</strong>
@@ -151,7 +184,7 @@
 
 <!-- ── RIDGE REGRESSION ── -->
 {% if ridge is defined %}
-<div class="card">
+<div class="card" id="ridge">
   <div class="card-title">Ridge Regression (L2 Regularization)</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
     Predicts <strong style="color:#F59E0B;">{{ ridge.target }}</strong>
@@ -220,7 +253,7 @@
 
 <!-- ── LOGISTIC REGRESSION ── -->
 {% if logr is defined %}
-<div class="card">
+<div class="card" id="logr">
   <div class="card-title">Logistic Regression</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
     Predicts <strong style="color:#F59E0B;">{{ logr.target }}</strong>
