@@ -70,11 +70,52 @@ def train_model():
 get_df()
 train_model()
 
-# -- static files (landing page) ----------------------
+# ── static files (landing page) ─────────────────────────
+@app.route('/')
+def index():      return send_from_directory(BASE_DIR, 'index.html')
+@app.route('/style.css')
+def css():        return send_from_directory(BASE_DIR, 'style.css', mimetype='text/css')
+@app.route('/main.js')
+def js():         return send_from_directory(BASE_DIR, 'main.js',  mimetype='application/javascript')
+@app.route('/assets/<path:fn>')
+def assets(fn):   return send_from_directory(os.path.join(BASE_DIR, 'assets'), fn)
 
-# -- LOGIN ----------------------
 
-# -- PREDICT API ----------------------
+# ── LOGIN ─────────────────────────
+@app.route('/login', methods=['GET', 'POST'])
+def login_page():
+    error = None
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '').strip()
+        # Demo: accept any non-empty credentials, redirect to dashboard
+        if email and password:
+            from flask import redirect
+            return redirect('/load-data')
+        error = 'Please enter both email and password.'
+    return render_template('login.html', error=error)
+
+
+
+# ── PREDICT API ─────────────────────────
+@app.route('/predict', methods=['POST'])
+def predict():
+    if model_pipeline is None:
+        return jsonify({'error': 'Model not ready.'}), 500
+    try:
+        data  = request.get_json(force=True)
+        FEATS = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips']
+        Xp    = pd.DataFrame([[float(data.get('year',2026)), float(data.get('month',1)),
+                                float(data.get('vehicles',1)), float(data.get('shared',0))]], columns=FEATS)
+        pred  = float(model_pipeline.predict(Xp)[0])
+        bt    = str(data.get('baseType', 'medium'))
+        final = max(10, round(pred * {'small':.85,'medium':1.0,'large':1.25,'enterprise':1.5}.get(bt, 1.0)))
+        ep    = {'enterprise':.15, 'large':.18}.get(bt, .22)
+        conf  = min(97, round(60 + np.log10(float(data.get('vehicles',1)) + 1) * 18))
+        return jsonify({'predicted': final, 'low': round(final*(1-ep)), 'high': round(final*(1+ep)), 'confidence': conf})
+    except Exception as e:
+        traceback.print_exc(); return jsonify({'error': str(e)}), 400
+
 
 if __name__ == '__main__':
     print('\n  RideRush ML Server')
