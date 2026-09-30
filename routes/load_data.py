@@ -18,3 +18,18 @@ from sklearn.manifold import TSNE
 
 load_data_bp = Blueprint('load_data_bp', __name__)
 
+@load_data_bp.route('/load-data')
+def load_data_page():
+    df = get_df()
+    if df is None:
+        return render_template('load_data.html', error='Dataset not found: ' + DATA_PATH,
+                               shape=None, dtypes={}, missing={}, miss_pct={},
+                               columns=[], rows=[], total_rows=0)
+    return render_template('load_data.html', error=None,
+        shape=df.shape,
+        dtypes={c: str(t) for c, t in df.dtypes.items()},
+        missing=df.isnull().sum().to_dict(),
+        miss_pct=(df.isnull().sum() / len(df) * 100).round(2).to_dict(),
+        columns=df.columns.tolist(),
+        rows=df.fillna('--').values.tolist(),
+        total_rows=len(df))
