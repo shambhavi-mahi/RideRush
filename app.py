@@ -11,14 +11,34 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import GradientBoostingRegressor
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+from routes.load_data import load_data_bp
+from routes.eda import eda_bp
+from routes.graphs import graphs_bp
+from routes.feature_engg import feature_engg_bp
+from routes.regression import regression_bp
+from routes.trees import trees_bp
+from routes.clustering import clustering_bp
+from routes.dbscan import dbscan_bp
+from routes.pca import pca_bp
+from routes.anomaly import anomaly_bp
+from routes.tsne_umap import tsne_umap_bp
+from routes.data_leakage import data_leakage_bp
+app.register_blueprint(load_data_bp)
+app.register_blueprint(eda_bp)
+app.register_blueprint(graphs_bp)
+app.register_blueprint(feature_engg_bp)
+app.register_blueprint(regression_bp)
+app.register_blueprint(trees_bp)
+app.register_blueprint(clustering_bp)
+app.register_blueprint(dbscan_bp)
+app.register_blueprint(pca_bp)
+app.register_blueprint(anomaly_bp)
+app.register_blueprint(tsne_umap_bp)
+app.register_blueprint(data_leakage_bp)
 
-from routes.data import data_bp
-from routes.model import model_bp
-from routes.advanced import adv_bp
 
-app.register_blueprint(data_bp)
-app.register_blueprint(model_bp)
-app.register_blueprint(adv_bp)
+
+
 
 model_pipeline = None
 

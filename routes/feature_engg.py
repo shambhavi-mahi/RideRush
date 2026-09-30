@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify, redirect
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,11 +11,10 @@ from sklearn.tree import DecisionTreeRegressor, plot_tree
 from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, accuracy_score, confusion_matrix, silhouette_score
+from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.manifold import TSNE
 
 
-model_bp = Blueprint('model_bp', __name__)
+feature_engg_bp = Blueprint('feature_engg_bp', __name__)
 
-# -- FEATURE ENGINEERING ------------------------------
-# -- REGRESSION ------------------------------
-# -- TREES ------------------------------
-# -- CLUSTERING ------------------------------
