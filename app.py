@@ -24,6 +24,8 @@ from routes.anomaly import anomaly_bp
 from routes.tsne_umap import tsne_umap_bp
 from routes.data_leakage import data_leakage_bp
 from routes.evaluation import evaluation_bp
+from routes.cluster_regression import cluster_reg_bp
+
 app.register_blueprint(load_data_bp)
 app.register_blueprint(eda_bp)
 app.register_blueprint(graphs_bp)
@@ -37,6 +39,8 @@ app.register_blueprint(anomaly_bp)
 app.register_blueprint(tsne_umap_bp)
 app.register_blueprint(data_leakage_bp)
 app.register_blueprint(evaluation_bp)
+app.register_blueprint(cluster_reg_bp)
+
 
 
 
