@@ -2,14 +2,12 @@
 {% set active = 'regression' %}
 {% block title %}Regression — RideRush ML{% endblock %}
 {% block page_title %}Regression <span>Models</span>{% endblock %}
-{% block page_subtitle %}Simple Linear Regression · Multiple Linear Regression on FHV Data{% endblock %}
+{% block page_subtitle %}Simple Linear Regression · Multiple Linear Regression · Ridge Regression on FHV Data{% endblock %}
 
 {% block content %}
 {% if error %}
   <div class="error-box">{{ error }}</div>
 {% else %}
-
-<!-- ── SIMPLE LINEAR REGRESSION ── -->
 
 <style>
   .jump-menu { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
@@ -33,15 +31,17 @@
     color: #0f172a;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   }
-  /* Offset for sticky header so anchor links don't hide under navbar */
   html { scroll-behavior: smooth; }
   .card { scroll-margin-top: 24px; }
 </style>
+
 <div class="jump-menu">
   <a href="#slr" class="btn-jump">Simple Linear</a>
   <a href="#mlr" class="btn-jump">Multiple Linear</a>
   <a href="#ridge" class="btn-jump">Ridge</a>
 </div>
+
+<!-- ── SIMPLE LINEAR REGRESSION ── -->
 <div class="card" id="slr">
   <div class="card-title">Simple Linear Regression (SLR)</div>
   <p style="font-size:13px;color:#475569;margin-bottom:16px;">
@@ -217,43 +217,6 @@
   {% endif %}
 </div>
 {% endif %}
-
-<!-- ── LOGISTIC REGRESSION ── -->
-{% if logr is defined %}
-<div class="card" id="logr">
-  <div class="card-title">Logistic Regression</div>
-  <p style="font-size:13px;color:#475569;margin-bottom:16px;">
-    Predicts <strong style="color:#F59E0B;">{{ logr.target }}</strong>
-    from features: <strong style="color:#3B82F6;">{{ logr.features | join(' · ') }}</strong>
-    <span class="badge badge-blue" style="margin-left:8px;">StandardScaler applied</span>
-  </p>
-
-  <div class="metrics-grid">
-    <div class="metric">
-      <div class="m-label">Accuracy</div>
-      <div class="m-value" style="font-size:20px;">{{ logr.accuracy }}</div>
-      <div class="m-sub">correct predictions</div>
-    </div>
-    <div class="metric">
-      <div class="m-label">Train Size</div>
-      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(logr.n_train) }}</div>
-      <div class="m-sub">rows (80%)</div>
-    </div>
-    <div class="metric">
-      <div class="m-label">Test Size</div>
-      <div class="m-value" style="font-size:20px;">{{ '{:,}'.format(logr.n_test) }}</div>
-      <div class="m-sub">rows (20%)</div>
-    </div>
-  </div>
-
-  {% if plots.logr is defined %}
-  <img class="plot-img" src="data:image/png;base64,{{ plots.logr }}" alt="Logistic Regression Plots" style="max-width:400px; margin-top:20px;">
-  {% endif %}
-</div>
-{% endif %}
-
-{% endif %}
-{% endblock %}
 
 {% endif %}
 {% endblock %}
