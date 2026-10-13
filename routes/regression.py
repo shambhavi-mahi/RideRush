@@ -18,11 +18,19 @@ from sklearn.manifold import TSNE
 
 regression_bp = Blueprint('regression_bp', __name__)
 
+_regression_cache = None
+
 @regression_bp.route('/regression')
 def regression_page():
+    global _regression_cache
+    if _regression_cache is not None:
+        return _regression_cache
+
     df = get_df()
     if df is None:
-        return render_template('regression.html', error='Dataset not found.', slr={}, mlr={}, plots={})
+        _regression_cache = render_template('regression.html', error='Dataset not found.', slr={}, mlr={}, plots={})
+        return _regression_cache
+
     TARGET = 'Total Dispatched Trips'
     SLRF   = 'Unique Dispatched Vehicles'
     MLRF   = ['Year', 'Month', 'Unique Dispatched Vehicles', 'Total Dispatched Shared Trips']
@@ -30,6 +38,11 @@ def regression_page():
 
     clean = df[list(set([TARGET, SLRF] + MLRF))].dropna()
     clean = clean[clean[TARGET] > 0]
+
+    # Sample to max 3 000 rows for speed
+    if len(clean) > 3000:
+        clean = clean.sample(3000, random_state=42)
+
     y     = clean[TARGET].values
 
     # Simple Linear Regression
@@ -109,4 +122,5 @@ def regression_page():
     axes[1].grid(True, axis='x', alpha=0.7); plt.tight_layout()
     plots['ridge'] = fig_b64(fig)
 
-    return render_template('regression.html', error=None, slr=slr, mlr=mlr, ridge=ridge_reg, plots=plots)
+    _regression_cache = render_template('regression.html', error=None, slr=slr, mlr=mlr, ridge=ridge_reg, plots=plots)
+    return _regression_cache
