@@ -86,29 +86,6 @@ def regression_page():
     axes[1].grid(True, axis='x', alpha=0.7); plt.tight_layout()
     plots['mlr'] = fig_b64(fig)
 
-    # Logistic Regression
-    y_bin = (y > np.median(y)).astype(int)
-    Xtr3, Xte3, ytr3, yte3 = train_test_split(Xm, y_bin, test_size=.2, random_state=42)
-    ss2 = StandardScaler()
-    Xtr3s = ss2.fit_transform(Xtr3); Xte3s = ss2.transform(Xte3)
-    lr = LogisticRegression().fit(Xtr3s, ytr3); yp3 = lr.predict(Xte3s)
-    acc = accuracy_score(yte3, yp3)
-    cm = confusion_matrix(yte3, yp3).tolist()
-    logr = dict(features=MLRF, target="High Trips (> Median)",
-                accuracy=round(acc, 4), n_train=len(Xtr3), n_test=len(Xte3), cm=cm)
-
-    fig, ax = plt.subplots(figsize=(6, 5))
-    im = ax.imshow(cm, cmap='Blues')
-    plt.colorbar(im, ax=ax)
-    ax.set_xticks([0, 1]); ax.set_yticks([0, 1])
-    ax.set_xticklabels(['Low', 'High']); ax.set_yticklabels(['Low', 'High'])
-    ax.set_xlabel('Predicted'); ax.set_ylabel('Actual')
-    ax.set_title('Logistic Regression Confusion Matrix', fontsize=11, fontweight='bold')
-    for i in range(2):
-        for j in range(2):
-            ax.text(j, i, str(cm[i][j]), ha='center', va='center', color='#0f172a' if cm[i][j] < np.max(cm)/2 else 'white', fontweight='bold')
-    plots['logr'] = fig_b64(fig)
-
     # Ridge Regression (Regularization)
     alpha = 10.0
     ridge_model = Ridge(alpha=alpha).fit(Xtr2s, ytr2); yp_ridge = ridge_model.predict(Xte2s)
@@ -132,4 +109,4 @@ def regression_page():
     axes[1].grid(True, axis='x', alpha=0.7); plt.tight_layout()
     plots['ridge'] = fig_b64(fig)
 
-    return render_template('regression.html', error=None, slr=slr, mlr=mlr, logr=logr, ridge=ridge_reg, plots=plots)
+    return render_template('regression.html', error=None, slr=slr, mlr=mlr, ridge=ridge_reg, plots=plots)

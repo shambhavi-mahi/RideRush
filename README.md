@@ -1,4 +1,4 @@
-﻿# RideRush — NYC FHV Intelligence Platform 🚕
+# RideRush — NYC FHV Intelligence Platform 🚕
 
 ![RideRush Dashboard](https://img.shields.io/badge/Status-Active-brightgreen)
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
@@ -14,9 +14,9 @@ Transitioning from a static frontend to a highly modular **Flask** backend, this
 
 ## 📸 Screenshots
 
-### Model Evaluation Dashboard
-*(Featuring Color-coded metrics, Jump-links, MathJax formulas, and Heatmap Confusion Matrices)*
-<img src="assets/screenshots/evaluation_dashboard.png" width="800">
+### Model Evaluation & Comparison
+*(Featuring Hyperparameter Search, Bayesian Optimization, Diagnostic Curves, and comprehensive cross-model comparison)*
+<img src="assets/screenshots/model_comparison.png" width="800">
 
 ### Authentication & Login Portal
 *(Featuring Full-screen split layout and AI-generated NYC data illustrations)*
@@ -48,10 +48,11 @@ Transitioning from a static frontend to a highly modular **Flask** backend, this
 * **t-SNE / UMAP**: Manifold learning for high-dimensional data visualization.
 * **Data Leakage Mitigation**: Demonstrations of target leakage and how to properly split/scale data to prevent it.
 
-### 5. Comprehensive Model Evaluation
-* **Regression Metrics**: MAE, MSE, RMSE, and R² Score.
-* **Classification Metrics**: Accuracy, Precision, Recall, and F1 Score.
-* **Visuals & Math**: Heatmap-styled Confusion Matrices and elegantly rendered **MathJax** mathematical formulas.
+### 5. Comprehensive Model Evaluation & Comparison
+* **Regression Metrics**: MAE, MSE, RMSE, and R2 Score evaluated across all models.
+* **Hyperparameter Tuning**: Implementation of RandomizedSearchCV (Random Search) and BayesSearchCV (Bayesian Optimization).
+* **Statistical Testing**: Paired t-tests for statistical significance between best models.
+* **Diagnostic Curves**: Residual plots, actual-vs-predicted plots, and Learning Curves.
 
 ---
 

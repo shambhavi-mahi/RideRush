@@ -5,13 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}RideRush ML{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/dashboard.css">
 </head>
 <body>
 <div class="app-layout">
 
+  <!-- ══ DARK SIDEBAR ══ -->
   <aside class="sidebar">
+
     <div class="sidebar-brand">
       <div class="brand-icon">
         <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="9" fill="#F59E0B"/><path d="M7 22 L11 10 H16 L18 17 L20 10 H25 L21 22 H16 L14 15 L12 22 Z" fill="white"/></svg>
@@ -23,81 +25,151 @@
     </div>
 
     <nav class="sidebar-nav">
-      <span class="nav-section-label">Data</span>
-      <a href="/load-data" class="nav-link {% if active=='load' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        Load Data
-      </a>
-      <a href="/eda" class="nav-link {% if active=='eda' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-        EDA / Statistics
-      </a>
-      <a href="/graphs" class="nav-link {% if active=='graphs' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Graphs
+
+      <!-- Overview link (always visible, no group) -->
+      <a href="/overview" class="nav-link {% if active=='overview' %}active{% endif %}" style="margin-bottom:6px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
       </a>
 
-      <span class="nav-section-label">Model</span>
-      <a href="/feature-engg" class="nav-link {% if active=='feature' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Feature Engg
-      </a>
-      <a href="/regression" class="nav-link {% if active=='regression' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        Regression
-      </a>
-      <a href="/trees" class="nav-link {% if active=='trees' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V8"/><path d="M5 12V8"/><path d="M19 12V8"/><path d="M12 8l-7-4"/><path d="M12 8l7-4"/></svg>
-        Trees & Boosting
-      </a>
-      <a href="/clustering" class="nav-link {% if active=='clustering' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><circle cx="7" cy="9" r="2"/><circle cx="17" cy="15" r="2"/></svg>
-        Clustering
-      </a>
-      <a href="/evaluation" class="nav-link {% if active=='evaluation' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        Model Evaluation
-      </a>
+      <!-- ── DATA ── -->
+      <div class="nav-group" id="grp-data">
+        <button class="nav-group-header" onclick="toggleGroup('grp-data')">
+          <span class="nav-group-icon data-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"/></svg>
+          </span>
+          <span class="nav-group-label">Data</span>
+          <span class="nav-group-pill data-pill">3</span>
+          <svg class="nav-group-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="nav-group-body open" id="grp-data-body">
+          <a href="/load-data" class="nav-link {% if active=='load' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Load Data
+          </a>
+          <a href="/eda" class="nav-link {% if active=='eda' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            EDA / Statistics
+          </a>
+          <a href="/graphs" class="nav-link {% if active=='graphs' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Graphs
+          </a>
+        </div>
+      </div>
 
+      <!-- ── MODELS ── -->
+      <div class="nav-group" id="grp-models">
+        <button class="nav-group-header" onclick="toggleGroup('grp-models')">
+          <span class="nav-group-icon models-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-4a1 1 0 011-1h2a1 1 0 011 1v13a1 1 0 01-1 1h-2a1 1 0 01-1-1V3z"/></svg>
+          </span>
+          <span class="nav-group-label">Models</span>
+          <span class="nav-group-pill models-pill">4</span>
+          <svg class="nav-group-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="nav-group-body open" id="grp-models-body">
+          <a href="/feature-engg" class="nav-link models-link {% if active=='feature' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Feature Engg
+          </a>
+          <a href="/regression" class="nav-link models-link {% if active=='regression' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            Regression
+          </a>
+          <a href="/trees" class="nav-link models-link {% if active=='trees' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V8"/><path d="M5 12V8"/><path d="M19 12V8"/><path d="M12 8l-7-4"/><path d="M12 8l7-4"/></svg>
+            Trees &amp; Boosting
+          </a>
+          <a href="/clustering" class="nav-link models-link {% if active=='clustering' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><circle cx="7" cy="9" r="2"/><circle cx="17" cy="15" r="2"/></svg>
+            Clustering
+          </a>
+        </div>
+      </div>
 
-      <span class="nav-section-label">Advanced ML</span>
-      <a href="/cluster-regression" class="nav-link {% if active=='cluster_reg' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-        Cluster Regression
-      </a>
-      <a href="/dbscan" class="nav-link {% if active=='dbscan' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M5 8v8M12 8v8M19 8v8"/></svg>
-        DBSCAN
-      </a>
-      <a href="/pca" class="nav-link {% if active=='pca' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2l20 20M2 22 22 2"/><circle cx="12" cy="12" r="3"/></svg>
-        PCA
-      </a>
-      <a href="/anomaly" class="nav-link {% if active=='anomaly' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Anomaly Detection
-      </a>
-      <a href="/tsne-umap" class="nav-link {% if active=='tsne' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
-        t-SNE / UMAP
-      </a>
-      <a href="/data-leakage" class="nav-link {% if active=='leakage' %}active{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Data Leakage
-      </a>
+      <!-- ── ADVANCED ML ── -->
+      <div class="nav-group" id="grp-adv">
+        <button class="nav-group-header" onclick="toggleGroup('grp-adv')">
+          <span class="nav-group-icon adv-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+          </span>
+          <span class="nav-group-label">Advanced ML</span>
+          <span class="nav-group-pill adv-pill">6</span>
+          <svg class="nav-group-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="nav-group-body open" id="grp-adv-body">
+          <a href="/cluster-regression" class="nav-link adv-link {% if active=='cluster_reg' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            Cluster Regression
+          </a>
+          <a href="/dbscan" class="nav-link adv-link {% if active=='dbscan' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M5 8v8M12 8v8M19 8v8"/></svg>
+            DBSCAN
+          </a>
+          <a href="/pca" class="nav-link adv-link {% if active=='pca' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 2l20 20M2 22 22 2"/><circle cx="12" cy="12" r="3"/></svg>
+            PCA
+          </a>
+          <a href="/anomaly" class="nav-link adv-link {% if active=='anomaly' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Anomaly Detection
+          </a>
+          <a href="/tsne-umap" class="nav-link adv-link {% if active=='tsne' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            t-SNE / UMAP
+          </a>
+          <a href="/data-leakage" class="nav-link adv-link {% if active=='leakage' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Data Leakage
+          </a>
+        </div>
+      </div>
 
-      <span class="nav-section-label">App</span>
-      <a href="/" class="nav-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Landing Page
-      </a>
+      <!-- ── MODEL EVALUATION (glowing card) ── -->
+      <div class="nav-group eval-group" id="grp-eval">
+        <button class="nav-group-header eval-header" onclick="toggleGroup('grp-eval')">
+          <span class="nav-group-icon eval-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          </span>
+          <span class="nav-group-label">Model Evaluation</span>
+          <span class="nav-group-pill eval-pill">Best</span>
+          <svg class="nav-group-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="nav-group-body open" id="grp-eval-body">
+          <a href="/evaluation" class="nav-link eval-link {% if active=='evaluation' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Model Evaluation
+          </a>
+        </div>
+      </div>
+
+      <!-- ── APP ── -->
+      <div class="nav-group" id="grp-app" style="margin-top:6px;">
+        <button class="nav-group-header" onclick="toggleGroup('grp-app')">
+          <span class="nav-group-icon app-icon">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+          </span>
+          <span class="nav-group-label">App</span>
+          <svg class="nav-group-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+        </button>
+        <div class="nav-group-body open" id="grp-app-body">
+          <a href="/" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Landing Page
+          </a>
+        </div>
+      </div>
+
     </nav>
 
     <div class="sidebar-footer">
-      <div class="dataset-info"><span class="dot"></span> FHV NYC Dataset</div>
+      <span class="dot"></span>
+      FHV NYC · Live
     </div>
   </aside>
 
+  <!-- ══ MAIN CONTENT ══ -->
   <main class="main-content">
     <div class="page-header">
       <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
@@ -109,12 +181,24 @@
   </main>
 
 </div>
+
 <script>
 function switchTab(group, id, btn) {
   document.querySelectorAll('[data-tab-group="'+group+'"]').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('[data-tab-btn="'+group+'"]').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
+}
+function toggleGroup(id) {
+  var body = document.getElementById(id + '-body');
+  var chevron = document.querySelector('#' + id + ' .nav-group-chevron');
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    chevron.style.transform = 'rotate(-90deg)';
+  } else {
+    body.classList.add('open');
+    chevron.style.transform = 'rotate(0deg)';
+  }
 }
 </script>
 </body>

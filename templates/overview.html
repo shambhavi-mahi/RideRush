@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+{% set active = 'overview' %}
+{% block title %}Dashboard — RideRush ML{% endblock %}
+
+{% block content %}
+
+<!-- ══ KPI ROW ══ -->
+<div class="stat-row">
+  <div class="stat-chip">
+    <div class="label">Total Records</div>
+    <div class="value">{{ '{:,}'.format(total_rows) }}</div>
+    <div class="sub">FHV trips loaded</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Models Available</div>
+    <div class="value">11</div>
+    <div class="sub">ML models ready</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Best R² Score</div>
+    <div class="value">0.9883</div>
+    <div class="sub">Random Forest · Bayes Opt</div>
+  </div>
+  <div class="stat-chip">
+    <div class="label">Dataset Coverage</div>
+    <div class="value" style="font-size:18px;padding-top:6px;">FHV NYC</div>
+    <div class="sub">2015 – 2026 · 5 boroughs</div>
+  </div>
+</div>
+
+<!-- ══ MODELS SECTION ══ -->
+<div>
+  <!-- Section divider -->
+  <div class="section-divider">
+    <div class="section-divider-title">
+      <span class="section-divider-icon icon-models">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </span>
+      Models
+    </div>
+    <div class="section-divider-line"></div>
+    <a href="/feature-engg" class="section-divider-link">Explore All →</a>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar" style="margin:14px 0 18px;">
+    <button class="filter-btn active">All Models</button>
+    <button class="filter-btn">Traditional ML</button>
+    <button class="filter-btn">Advanced ML</button>
+    <button class="filter-btn">Regression</button>
+    <button class="filter-btn">Clustering</button>
+  </div>
+
+  <!-- Traditional model cards -->
+  <div class="model-cards-grid">
+
+    <!-- Feature Engineering -->
+    <div class="model-card" style="animation-delay:0.05s">
+      <div class="model-card-top" style="background:#3B82F6;"></div>
+      <div class="model-card-body">
+        <div class="model-card-name">Feature Engineering</div>
+        <div class="model-card-desc">StandardScaler, MinMaxScaler, correlation mapping and feature preparation pipeline.</div>
+        <div class="model-card-badges">
+          <span class="badge badge-info">Preprocessing</span>
+          <span class="badge badge-blue">Scaling</span>
+        </div>
+      </div>
+      <div class="model-card-footer">
+        <a href="/feature-engg" class="btn-outline">View Details →</a>
+      </div>
+    </div>
+
+    <!-- Regression -->
+    <div class="model-card" style="animation-delay:0.10s">
+      <div class="model-card-top" style="background:#F59E0B;"></div>
+      <div class="model-card-body">
+        <div class="model-card-name">Regression Models</div>
+        <div class="model-card-desc">Simple Linear, Multiple Linear and Ridge (L2) regression for predicting Total Dispatched Trips.</div>
+        <div class="model-card-badges">
+          <span class="badge badge-warning">Regression</span>
+          <span class="badge badge-success">R² 0.9036</span>
+        </div>
+      </div>
+      <div class="model-card-footer">
+        <a href="/regression" class="btn-outline">View Details →</a>
+      </div>
+    </div>
+
+    <!-- Trees & Boosting -->
+    <div class="model-card" style="animation-delay:0.15s">
+      <div class="model-card-top" style="background:#10B981;"></div>
+      <div class="model-card-body">
+        <div class="model-card-name">Trees &amp; Boosting</div>
+        <div class="model-card-desc">Decision Tree, Random Forest, Gradient Boosting and AdaBoost ensemble models.</div>
+        <div class="model-card-badges">
+          <span class="badge badge-success">Ensemble</span>
+          <span class="badge badge-best">R² 0.9883 ★</span>
+        </div>
+      </div>
+      <div class="model-card-footer">
+        <a href="/trees" class="btn-outline">View Details →</a>
+      </div>
+    </div>
+
+    <!-- Clustering -->
+    <div class="model-card" style="animation-delay:0.20s">
+      <div class="model-card-top" style="background:#8B5CF6;"></div>
+      <div class="model-card-body">
+        <div class="model-card-name">Clustering</div>
+        <div class="model-card-desc">K-Means (Elbow method) and Agglomerative Hierarchical Clustering for unsupervised fleet segmentation.</div>
+        <div class="model-card-badges">
+          <span class="badge badge-purple">Clustering</span>
+          <span class="badge badge-info">Unsupervised</span>
+        </div>
+      </div>
+      <div class="model-card-footer">
+        <a href="/clustering" class="btn-outline">View Details →</a>
+      </div>
+    </div>
+
+  </div><!-- /model-cards-grid -->
+</div>
+
+<!-- ══ ADVANCED ML SUBSECTION ══ -->
+<div class="adv-section-card">
+  <div class="adv-section-header">
+    <div class="adv-section-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <div>
+      <div class="adv-section-title">Advanced ML Algorithms</div>
+      <div class="adv-section-sub">Specialized algorithms for dimensionality reduction, anomaly detection and manifold learning</div>
+    </div>
+    <span class="badge badge-purple" style="margin-left:auto;">6 Algorithms</span>
+  </div>
+
+  <div class="adv-card-grid">
+
+    <a href="/cluster-regression" class="adv-model-card">
+      <div class="adv-model-name">Cluster Regression</div>
+      <div class="adv-model-desc">K-Means segmentation + per-cluster regression prediction.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-purple">Hybrid</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+    <a href="/dbscan" class="adv-model-card">
+      <div class="adv-model-name">DBSCAN</div>
+      <div class="adv-model-desc">Density-based spatial clustering with noise identification.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-purple">Clustering</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+    <a href="/pca" class="adv-model-card">
+      <div class="adv-model-name">PCA</div>
+      <div class="adv-model-desc">Principal Component Analysis — 2D/3D dimensionality reduction.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-blue">Unsupervised</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+    <a href="/anomaly" class="adv-model-card">
+      <div class="adv-model-name">Anomaly Detection</div>
+      <div class="adv-model-desc">Isolation Forest + Local Outlier Factor for irregular fleet behaviour.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-red">Detection</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+    <a href="/tsne-umap" class="adv-model-card">
+      <div class="adv-model-name">t-SNE / UMAP</div>
+      <div class="adv-model-desc">High-dimensional manifold learning and interactive visualisation.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-cyan">Visualization</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+    <a href="/data-leakage" class="adv-model-card">
+      <div class="adv-model-name">Data Leakage</div>
+      <div class="adv-model-desc">Demonstrates target leakage and correct train/test split methodology.</div>
+      <div class="adv-model-footer">
+        <span class="badge badge-orange">Diagnostic</span>
+        <span style="font-size:11px;color:#8b5cf6;">→</span>
+      </div>
+    </a>
+
+  </div><!-- /adv-card-grid -->
+</div><!-- /adv-section-card -->
+
+
+<!-- ══ MODEL EVALUATION SECTION ══ -->
+<div>
+  <div class="section-divider">
+    <div class="section-divider-title">
+      <span class="section-divider-icon icon-eval">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </span>
+      Model Evaluation
+    </div>
+    <div class="section-divider-line"></div>
+    <a href="/evaluation" class="section-divider-link">View Full Report →</a>
+  </div>
+
+  <div class="eval-highlight-panel" style="margin-top:16px;">
+    <div class="eval-panel-inner">
+
+      <!-- Left: Best model spotlight -->
+      <div class="eval-panel-left">
+        <div class="eval-best-label">
+          <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Best Performing Model
+        </div>
+        <div class="eval-best-model-name">Random Forest (Bayes Opt)</div>
+        <div class="eval-best-sub">Bayesian Optimization · 5 iterations · 20% held-out test set</div>
+
+        <div class="eval-metric-pills">
+          <div class="eval-metric-pill">
+            <span class="eval-metric-pill-label">R² Score</span>
+            <span class="eval-metric-pill-val">0.9883</span>
+          </div>
+          <div class="eval-metric-pill">
+            <span class="eval-metric-pill-label">RMSE</span>
+            <span class="eval-metric-pill-val">63,780</span>
+          </div>
+          <div class="eval-metric-pill">
+            <span class="eval-metric-pill-label">MAE</span>
+            <span class="eval-metric-pill-val">6,046</span>
+          </div>
+          <div class="eval-metric-pill">
+            <span class="eval-metric-pill-label">MSE</span>
+            <span class="eval-metric-pill-val">4.07B</span>
+          </div>
+        </div>
+
+        <a href="/evaluation" class="btn-solid btn-green">View Full Evaluation →</a>
+      </div>
+
+      <!-- Right: mini comparison table -->
+      <div class="eval-panel-right">
+        <div class="eval-table-title">All Models Comparison</div>
+        <table class="mini-compare-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>R²</th>
+              <th>RMSE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Simple Linear Regression</td>
+              <td>~0.72</td>
+              <td>high</td>
+            </tr>
+            <tr>
+              <td>Multiple Linear Regression</td>
+              <td>0.9036</td>
+              <td>182,778</td>
+            </tr>
+            <tr>
+              <td>Ridge Regression</td>
+              <td>~0.90</td>
+              <td>~183k</td>
+            </tr>
+            <tr>
+              <td>Decision Tree</td>
+              <td>~0.85</td>
+              <td>high</td>
+            </tr>
+            <tr>
+              <td>AdaBoost</td>
+              <td>~0.88</td>
+              <td>high</td>
+            </tr>
+            <tr>
+              <td>Gradient Boosting (RS)</td>
+              <td>0.9852</td>
+              <td>71,684</td>
+            </tr>
+            <tr class="best-row">
+              <td>★ Random Forest (Bayes Opt)</td>
+              <td>0.9883</td>
+              <td>63,780</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:11px;color:var(--text-dim);margin-top:10px;">★ Live metrics — run <a href="/evaluation" style="color:var(--green);">Model Evaluation</a> to update</p>
+      </div>
+
+    </div><!-- /eval-panel-inner -->
+  </div><!-- /eval-highlight-panel -->
+</div>
+
+<!-- Dashboard footer -->
+<div class="dash-footer">
+  Dashboard powered by NYC TLC FHV Data &middot; Scikit-Learn &middot; Flask &middot; RideRush ML Platform
+</div>
+
+{% endblock %}

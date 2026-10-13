@@ -1,173 +1,513 @@
 {% extends 'base.html' %}
 {% set active = 'evaluation' %}
+{% block title %}Model Evaluation — RideRush ML{% endblock %}
 
 {% block content %}
-<!-- Include MathJax for rendering formulas -->
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
 <style>
-  .metric-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-  }
-  .metric-reg { background: linear-gradient(135deg, #fffbeb 0%, #fff 100%); border-left: 4px solid #f59e0b; }
-  .metric-clf { background: linear-gradient(135deg, #eff6ff 0%, #fff 100%); border-left: 4px solid #3b82f6; }
-  
-  .metric-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 4px; }
-  .metric-val { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
-  
-  .formula-box {
-    background: rgba(255,255,255,0.7);
-    border: 1px dashed #cbd5e1;
-    border-radius: 8px;
-    padding: 8px;
-    text-align: center;
-    font-size: 12px;
-    color: #334155;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .cm-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 4px;
-    margin-top: 12px;
-  }
-  .cm-table td {
-    padding: 16px;
-    border-radius: 8px;
-    text-align: center;
-    width: 50%;
-  }
-  .cm-tn { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-  .cm-fp { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
-  .cm-fn { background: #fff1f2; border: 1px solid #ffe4e6; color: #9f1239; }
-  .cm-tp { background: #dcfce7; border: 1px solid #86efac; color: #14532d; }
-  .cm-val { font-size: 24px; font-weight: 800; margin-top: 4px; display: block; }
-  .cm-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
+/* ── Page-level overrides ──────────────────────────────────────────────── */
+.eval-page { display: flex; flex-direction: column; gap: 28px; }
+
+/* ── Page Header ──────────────────────────────────────────────────────── */
+.eval-hero-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.eval-hero-header .breadcrumb {
+  font-size: 12px; color: #94a3b8; margin-bottom: 4px;
+}
+.eval-hero-header h1 {
+  font-size: 26px; font-weight: 800; color: #0f172a; margin: 0;
+  letter-spacing: -0.03em;
+}
+.eval-hero-header .subtitle {
+  font-size: 13px; color: #64748b; margin-top: 4px;
+}
+.eval-hero-header .header-badges {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.tag-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.tag-blue   { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.tag-violet { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+.tag-green  { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.tag-amber  { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+
+/* ── Best Model Hero Card ─────────────────────────────────────────────── */
+.best-model-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f2a1a 100%);
+  border-radius: 18px;
+  padding: 36px 40px;
+  display: flex; gap: 40px; align-items: center;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(16,185,129,0.18), 0 4px 20px rgba(0,0,0,0.15);
+}
+.best-model-hero::before {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.best-model-hero::after {
+  content: '';
+  position: absolute; bottom: -80px; left: 30%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.best-hero-left { flex: 1; position: relative; z-index: 1; }
+.best-crown {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.4);
+  border-radius: 100px; padding: 4px 12px;
+  font-size: 11px; font-weight: 700; color: #6ee7b7;
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px;
+}
+.best-crown svg { width: 12px; height: 12px; }
+.best-hero-title {
+  font-size: 28px; font-weight: 800; color: #ffffff;
+  letter-spacing: -0.03em; margin-bottom: 4px;
+}
+.best-hero-subtitle {
+  font-size: 13px; color: rgba(255,255,255,0.55); margin-bottom: 24px;
+}
+.best-params {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 8px 14px; font-size: 12px; color: rgba(255,255,255,0.7);
+  font-family: monospace; margin-bottom: 28px; max-width: 100%;
+  word-break: break-all;
+}
+.best-metrics-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.best-metric-chip {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 12px 18px; text-align: center;
+  backdrop-filter: blur(4px); min-width: 110px;
+}
+.best-metric-chip .chip-label {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px;
+}
+.best-metric-chip .chip-val {
+  font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;
+}
+.best-metric-chip.chip-r2  .chip-val { color: #6ee7b7; }
+.best-metric-chip.chip-rmse .chip-val { color: #fbbf24; }
+.best-metric-chip.chip-mae .chip-val  { color: #93c5fd; }
+.best-metric-chip.chip-mse .chip-val  { color: #c4b5fd; }
+
+.best-hero-right {
+  flex-shrink: 0; position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 10px; min-width: 200px;
+}
+.hero-stat-row {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 10px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.hero-stat-label { font-size: 11px; color: rgba(255,255,255,0.45); }
+.hero-stat-val   { font-size: 13px; font-weight: 700; color: #fff; }
+.hero-badge-best {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff; font-size: 11px; font-weight: 800;
+  padding: 6px 14px; border-radius: 100px; text-align: center;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+}
+
+/* ── Section Headers ──────────────────────────────────────────────────── */
+.eval-section-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.eval-section-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.eval-section-icon svg { width: 16px; height: 16px; }
+.icon-green  { background: #ecfdf5; color: #059669; }
+.icon-violet { background: #f5f3ff; color: #7c3aed; }
+.icon-amber  { background: #fffbeb; color: #d97706; }
+.icon-blue   { background: #eff6ff; color: #2563eb; }
+.eval-section-title {
+  font-size: 16px; font-weight: 700; color: #0f172a;
+}
+.eval-section-desc { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+
+/* ── Stat Test Card ───────────────────────────────────────────────────── */
+.stat-test-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 28px 32px;
+  border-left: 5px solid #8b5cf6;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.stat-test-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 20px;
+}
+.stat-chip-card {
+  border: 1px solid #f1f5f9;
+  border-radius: 12px; padding: 16px 20px; text-align: center;
+  background: #f8fafc;
+}
+.stat-chip-card .sc-label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+.stat-chip-card .sc-val   { font-size: 18px; font-weight: 800; color: #0f172a; }
+.stat-chip-card.sc-tstat  { border-color: #ddd6fe; background: #faf5ff; }
+.stat-chip-card.sc-tstat .sc-val { color: #6d28d9; }
+.stat-chip-card.sc-pval   { border-color: #bfdbfe; background: #eff6ff; }
+.stat-chip-card.sc-pval .sc-val  { color: #2563eb; font-size: 15px; }
+.stat-chip-card.sc-result { border-color: #a7f3d0; background: #ecfdf5; }
+.stat-chip-card.sc-result .sc-val { color: #059669; font-size: 13px; font-weight: 700; }
+.stat-chip-card.sc-result.not-sig { border-color: #fecaca; background: #fef2f2; }
+.stat-chip-card.sc-result.not-sig .sc-val { color: #dc2626; }
+.stat-compare-text {
+  font-size: 13px; color: #475569; margin-bottom: 4px;
+}
+.stat-compare-text strong { color: #0f172a; }
+
+/* ── Comparison Table ─────────────────────────────────────────────────── */
+.compare-card {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 28px 32px; border-top: 5px solid #3b82f6;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.compare-table {
+  width: 100%; border-collapse: collapse; margin-top: 4px;
+}
+.compare-table thead th {
+  background: #f8fafc; color: #64748b;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 12px 16px; border-bottom: 2px solid #e2e8f0;
+  text-align: left; white-space: nowrap;
+}
+.compare-table thead th:not(:first-child) { text-align: right; }
+.compare-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+.compare-table tbody tr:hover { background: #f8fafc; }
+.compare-table tbody tr.row-best {
+  background: linear-gradient(90deg, #ecfdf5 0%, #f0fdf4 100%) !important;
+  border-left: 4px solid #10b981;
+}
+.compare-table tbody tr.row-best td { border-bottom: 1px solid #a7f3d0; }
+.compare-table tbody td {
+  padding: 14px 16px; font-size: 13px; color: #334155; font-weight: 500;
+}
+.compare-table tbody td:not(:first-child) { text-align: right; font-family: 'DM Mono', monospace; }
+.model-name-cell { display: flex; align-items: center; gap: 10px; }
+.rank-badge {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; flex-shrink: 0;
+}
+.rank-1 { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.rank-2 { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+.rank-3 { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+.rank-other { background: #f8fafc; color: #94a3b8; border: 1px solid #f1f5f9; }
+.best-model-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff; font-size: 10px; font-weight: 800;
+  padding: 2px 8px; border-radius: 100px; letter-spacing: 0.04em;
+}
+.metric-val-good  { color: #059669; font-weight: 700; }
+.metric-val-ok    { color: #d97706; font-weight: 700; }
+.metric-val-poor  { color: #ef4444; font-weight: 600; }
+
+/* ── R² Progress Bars ─────────────────────────────────────────────────── */
+.r2-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.r2-bar-wrap { width: 60px; height: 5px; background: #e2e8f0; border-radius: 100px; flex-shrink: 0; }
+.r2-bar { height: 100%; border-radius: 100px; background: #10b981; }
+
+/* ── Diagnostic Plots ─────────────────────────────────────────────────── */
+.plots-section {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+  padding: 28px 32px; border-top: 5px solid #f59e0b;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.plots-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;
+}
+.plot-frame {
+  border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.plot-frame:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
+.plot-frame-header {
+  padding: 10px 14px; background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex; align-items: center; gap: 8px;
+}
+.plot-frame-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.plot-frame-label { font-size: 12px; font-weight: 700; color: #334155; }
+.plot-frame img { width: 100%; display: block; }
+.plot-frame-full { grid-column: span 2; }
+.plot-frame-full img { max-width: 65%; margin: 0 auto; display: block; }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .best-model-hero { flex-direction: column; padding: 28px 24px; }
+  .best-hero-right { min-width: unset; width: 100%; flex-direction: row; flex-wrap: wrap; }
+  .hero-stat-row { flex: 1; min-width: 140px; }
+  .plots-grid-2 { grid-template-columns: 1fr; }
+  .plot-frame-full { grid-column: span 1; }
+  .plot-frame-full img { max-width: 100%; }
+  .stat-test-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .best-metrics-row { flex-direction: column; }
+  .best-metric-chip { min-width: unset; }
+}
 </style>
 
-<div class="content-header">
-  <div>
-    <h1>Model Evaluation & Metrics</h1>
-    <p>Comprehensive mathematical formulas, performance metrics, and beautiful visualizations.</p>
+<div class="eval-page">
+
+  <!-- ── Page Header ─────────────────────────────────────────────────── -->
+  <div class="eval-hero-header">
+    <div>
+      <div class="breadcrumb">Model Evaluation › Selection Report</div>
+      <h1>Model Evaluation &amp; Selection</h1>
+      <p class="subtitle">Comprehensive evaluation using Hyperparameter Search, Bayesian Optimization, Diagnostic Curves &amp; Statistical Testing.</p>
+    </div>
+    <div class="header-badges">
+      <span class="tag-pill tag-blue">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"/></svg>
+        Bayesian Opt
+      </span>
+      <span class="tag-pill tag-violet">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+        RandomizedSearchCV
+      </span>
+      <span class="tag-pill tag-green">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        Paired t-test
+      </span>
+      <span class="tag-pill tag-amber">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:11px;height:11px"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"/><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"/></svg>
+        Diagnostic Curves
+      </span>
+    </div>
   </div>
-</div>
 
-{% if error %}
-<div class="alert alert-danger">{{ error }}</div>
-{% else %}
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+  {% if error %}
+  <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:20px 24px;color:#dc2626;font-size:14px;">
+    <strong>Error:</strong> {{ error }}
+  </div>
+  {% else %}
 
-  <!-- REGRESSION METRICS -->
-  <div class="card" style="padding: 24px; border-top: 4px solid #f59e0b;">
-    <h2 style="font-size:18px; margin-bottom: 24px; display:flex; align-items:center; gap:10px; color:#0f172a;">
-      <div style="padding:8px; background:#fffbeb; border-radius:8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+  <!-- ── Best Model Hero ──────────────────────────────────────────────── -->
+  <div class="best-model-hero">
+    <div class="best-hero-left">
+      <div class="best-crown">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        Best Performing Model
       </div>
-      Regression Performance
-    </h2>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px;">
-      <div class="metric-card metric-reg">
-        <div class="metric-title">Mean Absolute Error (MAE)</div>
-        <div class="metric-val">{{ reg.mae }}</div>
-        <div class="formula-box">$$ \text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i| $$</div>
+      <div class="best-hero-title">{{ best_name }}</div>
+      <div class="best-hero-subtitle">Evaluated against {{ models | length }} competing models on NYC FHV trip data</div>
+      {% if 'best_params' in models[best_name] %}
+      <div class="best-params">
+        <svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;color:#10b981;flex-shrink:0"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        Optimal Params: {{ models[best_name]['best_params'] }}
       </div>
-      <div class="metric-card metric-reg">
-        <div class="metric-title">Mean Squared Error (MSE)</div>
-        <div class="metric-val">{{ reg.mse }}</div>
-        <div class="formula-box">$$ \text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2 $$</div>
+      {% endif %}
+      <div class="best-metrics-row">
+        <div class="best-metric-chip chip-r2">
+          <div class="chip-label">R² Score</div>
+          <div class="chip-val">{{ models[best_name]['r2'] }}</div>
+        </div>
+        <div class="best-metric-chip chip-rmse">
+          <div class="chip-label">RMSE</div>
+          <div class="chip-val">{{ models[best_name]['rmse'] | int | string }}</div>
+        </div>
+        <div class="best-metric-chip chip-mae">
+          <div class="chip-label">MAE</div>
+          <div class="chip-val">{{ models[best_name]['mae'] | int | string }}</div>
+        </div>
+        <div class="best-metric-chip chip-mse">
+          <div class="chip-label">MSE</div>
+          <div class="chip-val">{{ models[best_name]['mse'] | int | string }}</div>
+        </div>
       </div>
-      <div class="metric-card metric-reg">
-        <div class="metric-title">Root Mean Squared (RMSE)</div>
-        <div class="metric-val">{{ reg.rmse }}</div>
-        <div class="formula-box">$$ \text{RMSE} = \sqrt{\text{MSE}} $$</div>
+    </div>
+
+    <div class="best-hero-right">
+      <div class="hero-badge-best">🏆 &nbsp;#1 Best Model</div>
+      <div class="hero-stat-row">
+        <span class="hero-stat-label">Total Models Tested</span>
+        <span class="hero-stat-val">{{ models | length }}</span>
       </div>
-      <div class="metric-card metric-reg">
-        <div class="metric-title">R-Squared (R&sup2;)</div>
-        <div class="metric-val">{{ reg.r2 }}</div>
-        <div class="formula-box">$$ R^2 = 1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2} $$</div>
+      <div class="hero-stat-row">
+        <span class="hero-stat-label">Optimization</span>
+        <span class="hero-stat-val">Bayes / RS</span>
+      </div>
+      <div class="hero-stat-row">
+        <span class="hero-stat-label">Cross-Validation</span>
+        <span class="hero-stat-val">k = 2 folds</span>
+      </div>
+      <div class="hero-stat-row">
+        <span class="hero-stat-label">Dataset</span>
+        <span class="hero-stat-val">NYC FHV Trips</span>
       </div>
     </div>
   </div>
 
-  <!-- CLASSIFICATION METRICS -->
-  <div class="card" style="padding: 24px; border-top: 4px solid #3b82f6;">
-    <h2 style="font-size:18px; margin-bottom: 24px; display:flex; align-items:center; gap:10px; color:#0f172a;">
-      <div style="padding:8px; background:#eff6ff; border-radius:8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <!-- ── All Models Comparison Table ─────────────────────────────────── -->
+  <div class="compare-card">
+    <div class="eval-section-header">
+      <div class="eval-section-icon icon-blue">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zm0 6a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z"/></svg>
       </div>
-      Classification Performance
-    </h2>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-      <div class="metric-card metric-clf">
-        <div class="metric-title">Accuracy</div>
-        <div class="metric-val">{{ clf.accuracy }}</div>
-        <div class="formula-box">$$ \frac{TP + TN}{\text{Total}} $$</div>
-      </div>
-      <div class="metric-card metric-clf">
-        <div class="metric-title">Precision</div>
-        <div class="metric-val">{{ clf.precision }}</div>
-        <div class="formula-box">$$ \frac{TP}{TP + FP} $$</div>
-      </div>
-      <div class="metric-card metric-clf">
-        <div class="metric-title">Recall</div>
-        <div class="metric-val">{{ clf.recall }}</div>
-        <div class="formula-box">$$ \frac{TP}{TP + FN} $$</div>
-      </div>
-      <div class="metric-card metric-clf">
-        <div class="metric-title">F1 Score</div>
-        <div class="metric-val">{{ clf.f1 }}</div>
-        <div class="formula-box" style="font-size:11px;">$$ 2 \cdot \frac{\text{Pre} \cdot \text{Rec}}{\text{Pre} + \text{Rec}} $$</div>
+      <div>
+        <div class="eval-section-title">All Models Comparison</div>
+        <div class="eval-section-desc">Ranked by R² score — higher is better for R², lower is better for RMSE / MAE / MSE</div>
       </div>
     </div>
 
-    <!-- CONFUSION MATRIX HEATMAP -->
-    <div style="margin-bottom: 32px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-        <div style="font-size:14px; font-weight:700; color:#0f172a;">Confusion Matrix</div>
-        <div style="font-size:11px; color:#64748b; font-weight:600; text-transform:uppercase;">Actual vs Predicted</div>
-      </div>
-      
-      <table class="cm-table">
-        <tr>
-          <td class="cm-tn">
-            <span class="cm-label">True Negative</span>
-            <span class="cm-val">{{ clf.cm[0][0] }}</span>
-          </td>
-          <td class="cm-fp">
-            <span class="cm-label">False Positive</span>
-            <span class="cm-val">{{ clf.cm[0][1] }}</span>
-          </td>
-        </tr>
-        <tr>
-          <td class="cm-fn">
-            <span class="cm-label">False Negative</span>
-            <span class="cm-val">{{ clf.cm[1][0] }}</span>
-          </td>
-          <td class="cm-tp">
-            <span class="cm-label">True Positive</span>
-            <span class="cm-val">{{ clf.cm[1][1] }}</span>
-          </td>
-        </tr>
+    <div style="overflow-x:auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:36px;">#</th>
+            <th>Model</th>
+            <th>R² Score</th>
+            <th>RMSE</th>
+            <th>MAE</th>
+            <th>MSE</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for name, info in models.items() %}
+          {% set loop_idx = loop.index %}
+          <tr class="{% if name == best_name %}row-best{% endif %}">
+            <td>
+              <div class="rank-badge
+                {% if loop_idx == 1 %}rank-1
+                {% elif loop_idx == 2 %}rank-2
+                {% elif loop_idx == 3 %}rank-3
+                {% else %}rank-other{% endif %}">
+                {{ loop_idx }}
+              </div>
+            </td>
+            <td>
+              <div class="model-name-cell">
+                <strong>{{ name }}</strong>
+                {% if name == best_name %}
+                  <span class="best-model-badge">★ BEST</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <div class="r2-cell">
+                <span class="{% if info.r2 >= 0.95 %}metric-val-good{% elif info.r2 >= 0.88 %}metric-val-ok{% else %}metric-val-poor{% endif %}">
+                  {{ info.r2 }}
+                </span>
+                <div class="r2-bar-wrap">
+                  <div class="r2-bar" style="width: {{ [info.r2 * 100, 100] | min }}%; background: {% if info.r2 >= 0.95 %}#10b981{% elif info.r2 >= 0.88 %}#f59e0b{% else %}#ef4444{% endif %};"></div>
+                </div>
+              </div>
+            </td>
+            <td class="{% if loop_idx == 1 %}metric-val-good{% elif loop_idx <= 3 %}metric-val-ok{% else %}metric-val-poor{% endif %}">
+              {{ info.rmse }}
+            </td>
+            <td>{{ info.mae }}</td>
+            <td style="color:#94a3b8;">{{ info.mse | int }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
       </table>
     </div>
   </div>
 
+  <!-- ── Statistical Testing ─────────────────────────────────────────── -->
+  <div class="stat-test-card">
+    <div class="eval-section-header">
+      <div class="eval-section-icon icon-violet">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>
+      <div>
+        <div class="eval-section-title">Statistical Testing — Paired t-test</div>
+        <div class="eval-section-desc">Validates whether the performance gain of the best model is statistically significant</div>
+      </div>
+    </div>
+    <p class="stat-compare-text">
+      Comparing absolute errors of <strong>{{ stat_test.best }}</strong> vs baseline <strong>{{ stat_test.baseline }}</strong>
+    </p>
+    <div class="stat-test-grid">
+      <div class="stat-chip-card sc-tstat">
+        <div class="sc-label">t-Statistic</div>
+        <div class="sc-val">{{ stat_test.t_stat }}</div>
+      </div>
+      <div class="stat-chip-card sc-pval">
+        <div class="sc-label">p-Value</div>
+        <div class="sc-val">{{ '%0.4e' | format(stat_test.p_val) }}</div>
+      </div>
+      <div class="stat-chip-card sc-result {% if not stat_test.significant %}not-sig{% endif %}">
+        <div class="sc-label">Conclusion</div>
+        <div class="sc-val">
+          {% if stat_test.significant %}
+            ✓ Significant (p &lt; 0.05)
+          {% else %}
+            ✗ Not Significant
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#94a3b8;margin-top:16px;">
+      {% if stat_test.significant %}
+      The best model's improvement over the baseline is <strong style="color:#059669;">statistically significant</strong>. The null hypothesis (models perform equally) is rejected at the 5% level.
+      {% else %}
+      The difference is <strong style="color:#dc2626;">not statistically significant</strong>. Both models may perform comparably in production.
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- ── Diagnostic Curves ────────────────────────────────────────────── -->
+  <div class="plots-section">
+    <div class="eval-section-header">
+      <div class="eval-section-icon icon-amber">
+        <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"/></svg>
+      </div>
+      <div>
+        <div class="eval-section-title">Diagnostic Curves — {{ best_name }}</div>
+        <div class="eval-section-desc">Residual analysis, actual vs predicted, and learning curve for bias-variance diagnosis</div>
+      </div>
+    </div>
+
+    <div class="plots-grid-2">
+      <div class="plot-frame">
+        <div class="plot-frame-header">
+          <div class="plot-frame-dot" style="background:#f59e0b;"></div>
+          <span class="plot-frame-label">Residual Plot</span>
+          <span style="font-size:11px;color:#94a3b8;margin-left:auto;">Error distribution around zero</span>
+        </div>
+        <img src="data:image/png;base64,{{ plots.residual }}" alt="Residual Plot">
+      </div>
+      <div class="plot-frame">
+        <div class="plot-frame-header">
+          <div class="plot-frame-dot" style="background:#3b82f6;"></div>
+          <span class="plot-frame-label">Actual vs Predicted</span>
+          <span style="font-size:11px;color:#94a3b8;margin-left:auto;">Closer to diagonal = better fit</span>
+        </div>
+        <img src="data:image/png;base64,{{ plots.actual_pred }}" alt="Actual vs Predicted">
+      </div>
+      <div class="plot-frame plot-frame-full">
+        <div class="plot-frame-header">
+          <div class="plot-frame-dot" style="background:#8b5cf6;"></div>
+          <span class="plot-frame-label">Learning Curve — Bias / Variance Analysis</span>
+          <span style="font-size:11px;color:#94a3b8;margin-left:auto;">Train vs CV score across dataset sizes</span>
+        </div>
+        <img src="data:image/png;base64,{{ plots.learning_curve }}" alt="Learning Curve">
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
 </div>
-{% endif %}
 {% endblock %}
